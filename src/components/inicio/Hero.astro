@@ -1,32 +1,21 @@
 ---
 /**
- * Hero como FICHA de la boleta, pensado para quien decide en 5 segundos (reclutador, cliente):
- * 1. Quién: foto + nombre grande + rol (H1 para SEO) + lugar.
- * 2. Cómo contactarlo: LinkedIn, correo, CV y GitHub, en la misma ficha.
- * 3. Qué hace: la promesa "escrita" en azul pluma.
- * 4. Pruebas: herramientas, certificaciones verificables y ruta en curso.
- * La foto se "imprime" sobre el papel del formulario (escala de grises fundida con el campo).
+ * Hero (sin foto), organizado como una boleta con dos columnas:
+ * - Izquierda, protagonista: la promesa "escrita" en azul pluma + herramientas y temas.
+ * - Derecha, la ficha: nombre, ocupación (H1 para SEO), lugar y contacto.
+ * - Abajo: pruebas (certificaciones verificables, ruta en curso) y acceso a los casos.
+ * En móvil la ficha va primero: quien llega sabe en 5 segundos quién es y cómo contactarlo.
  */
-import { Image } from "astro:assets"
-import type { ImageMetadata } from "astro"
 import { PERFIL, CERTIFICACIONES, esPendiente } from "@/data/perfil"
 import LinkedIn from "@/components/icons/LinkedIn.astro"
 import GitHub from "@/components/icons/GitHub.astro"
 import FileText from "@/components/icons/FileText.astro"
 import Mail from "@/components/icons/Mail.astro"
-import MapPin from "@/components/icons/MapPin.astro"
 import IndicadorRuta from "./IndicadorRuta.astro"
 import { t } from "@/i18n"
 
-// Foto: src/assets/foto.(avif|jpg|png|webp). Se detecta sola.
-const fotos = import.meta.glob<ImageMetadata>("/src/assets/foto.{jpg,jpeg,png,webp,avif}", {
-  eager: true,
-  import: "default",
-})
-const foto = Object.values(fotos)[0]
-
 const { linkedin, github, cv, email } = PERFIL.enlaces
-const botones = [
+const contacto = [
   { texto: "LinkedIn", url: linkedin, Icono: LinkedIn, lleno: true },
   { texto: "Escribime", url: esPendiente(email) ? email : `mailto:${email}`, Icono: Mail, lleno: false },
   { texto: "CV", url: cv, Icono: FileText, lleno: false },
@@ -38,188 +27,178 @@ const verificables = CERTIFICACIONES.filter((c) => c.verificar).length
 
 <section class="contenedor pt-8 sm:pt-12" aria-labelledby="hero-t">
   <div class="boleta">
-    <div class="ficha">
-      <div class="retrato">
-        {
-          foto ? (
-            <Image
-              src={foto}
-              alt={`Foto de ${PERFIL.nombre}`}
-              width={560}
-              height={700}
-              widths={[240, 400, 560]}
-              sizes="(min-width: 64rem) 17rem, (min-width: 48rem) 13rem, 7rem"
-              loading="eager"
-              fetchpriority="high"
-              class="foto"
-            />
-          ) : (
-            <div class="foto foto-vacia" role="img" aria-label={`Iniciales de ${PERFIL.nombre}`}>
-              <span>BC</span>
-            </div>
-          )
-        }
-      </div>
-
-      <div class="datos">
-        <p class="nombre">{PERFIL.nombre}</p>
-        <h1 id="hero-t" class="rol">{t("hero.h1")}</h1>
-        <p class="lugar">
-          <MapPin class="size-5 shrink-0 text-forma-t" />
-          {PERFIL.ciudad}, {PERFIL.provincia}
-        </p>
-      </div>
-      <ul class="acciones">
-          {
-            botones.map(({ texto, url, Icono, lleno }) =>
-              !esPendiente(url) ? (
-                <li>
-                  <a href={url} rel="noopener" class:list={["boton", lleno && "boton-lleno"]}>
-                    <Icono class="size-5" /> {texto}
-                  </a>
-                </li>
-              ) : dev ? (
-                <li>
-                  <span class="boton pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
-                    <Icono class="size-5" /> {texto}: {url}
-                  </span>
-                </li>
-              ) : null,
-            )
-          }
-          <li>
-            <a href="/casos/" class="boton">{t("hero.verCasos")}</a>
-          </li>
-        </ul>
+    <div class="campo-f c-ficha">
+      <span class="etiqueta">Nombre</span>
+      <p class="nombre">{PERFIL.nombre}</p>
+      <span class="etiqueta mt-4">Ocupación</span>
+      <h1 id="hero-t" class="rol">{t("hero.h1")}</h1>
+      <span class="etiqueta mt-4">Lugar</span>
+      <p class="lugar">{PERFIL.ciudad}, {PERFIL.provincia}</p>
     </div>
 
     <div class="campo-f c-promesa">
       <span class="etiqueta">¿Qué hace?</span>
       <p class="promesa escribir">{t("hero.promesa")}</p>
+      <p class="apoyo">{t("hero.apoyo")}</p>
     </div>
 
-    <div class="pruebas">
-      <div class="campo-f">
-        <span class="etiqueta">Herramientas y temas</span>
-        <p class="text-base text-tinta-2 sm:text-lg">{t("hero.apoyo")}</p>
-      </div>
-      <div class="campo-f">
-        <span class="etiqueta">Certificaciones</span>
-        <p class="text-base sm:text-lg">
-          <span class="num text-2xl font-extrabold text-pluma">{verificables}</span> verificables en línea, entre ellas Data Analytics Essentials de Cisco.
-        </p>
-        <a href="#formacion" class="mt-1 inline-block font-bold text-pluma underline decoration-2 underline-offset-4">Ver certificaciones</a>
-      </div>
-      <div class="campo-f">
-        <span class="etiqueta">Ruta de datos</span>
-        <IndicadorRuta />
-      </div>
+    <div class="campo-f c-contacto">
+      <span class="etiqueta">Contacto</span>
+      <ul class="acciones">
+        {
+          contacto.map(({ texto, url, Icono, lleno }) =>
+            !esPendiente(url) ? (
+              <li>
+                <a href={url} rel="noopener" class:list={["boton", lleno && "boton-lleno"]}>
+                  <Icono class="size-5" /> {texto}
+                </a>
+              </li>
+            ) : dev ? (
+              <li>
+                <span class="boton pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
+                  <Icono class="size-5" /> {texto}: {url}
+                </span>
+              </li>
+            ) : null,
+          )
+        }
+      </ul>
     </div>
+
+    <div class="campo-f c-certs">
+      <span class="etiqueta">Certificaciones</span>
+      <p class="text-base sm:text-lg">
+        <span class="num text-2xl font-extrabold text-pluma">{verificables}</span> verificables en línea, entre ellas Data Analytics Essentials de Cisco.
+      </p>
+      <a href="#formacion" class="mt-1 inline-block font-bold text-pluma underline decoration-2 underline-offset-4">Ver certificaciones</a>
+    </div>
+
+    <div class="campo-f c-ruta">
+      <span class="etiqueta">Ruta de datos</span>
+      <IndicadorRuta />
+    </div>
+
+    <a href="/casos/" class="c-casos">
+      <span class="etiqueta">Casos</span>
+      <span class="ir">{t("hero.verCasos")}</span>
+      <span class="text-base text-tinta-2">Preguntas reales respondidas con datos.</span>
+    </a>
   </div>
 </section>
 
 <style>
-  /* Las líneas internas son el "gap" de 1px sobre fondo de tinta de formulario. */
+  /* Las líneas internas son el "gap" de 1px sobre la tinta de formulario. */
   .boleta {
     display: grid;
     gap: 1px;
     background: var(--forma);
     border: 2px solid var(--forma);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "ficha"
+      "contacto"
+      "promesa"
+      "certs"
+      "ruta"
+      "casos";
   }
-  .campo-f {
+  .campo-f,
+  .c-casos {
     background: var(--papel);
-    padding: 0.85rem 1rem 1rem;
+    padding: 0.9rem 1rem 1rem;
     min-width: 0;
   }
-  .campo-f .etiqueta {
-    margin-bottom: 0.35rem;
+  .campo-f .etiqueta,
+  .c-casos .etiqueta {
+    margin-bottom: 0.3rem;
   }
-
-  /* ── Ficha: foto + identidad + contacto ── */
-  .ficha {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 0 1rem;
-    padding: 1rem;
+  .c-ficha {
+    grid-area: ficha;
     background: var(--forma-f);
   }
-  .retrato {
-    align-self: start;
+  .c-promesa {
+    grid-area: promesa;
   }
-  .foto {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    object-position: 50% 22%;
-    border: 1.5px solid var(--forma-fuerte);
-    /* "Impresa" en el papel: escala de grises fundida con el relleno del campo. */
-    filter: grayscale(1) contrast(1.08);
-    mix-blend-mode: multiply;
+  .c-contacto {
+    grid-area: contacto;
+    background: var(--forma-f);
   }
-  :global(:root[data-theme="dark"]) .foto {
-    mix-blend-mode: normal;
-    filter: grayscale(1) contrast(1.05) brightness(0.92);
+  .c-certs {
+    grid-area: certs;
   }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .foto {
-      mix-blend-mode: normal;
-      filter: grayscale(1) contrast(1.05) brightness(0.92);
-    }
+  .c-ruta {
+    grid-area: ruta;
   }
-  .foto-vacia {
-    display: grid;
-    place-items: center;
-    background: var(--papel);
-    color: var(--forma-t);
+  .c-casos {
+    grid-area: casos;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-decoration: none;
+    transition: background 160ms var(--ease-salida);
+  }
+  .c-casos:hover {
+    background: var(--pluma-f);
+  }
+  .ir {
     font-family: var(--font-titulo);
-    font-stretch: 125%;
-    font-weight: 800;
-    font-size: 2rem;
+    font-stretch: 112%;
+    font-weight: 780;
+    font-size: 1.4rem;
+    line-height: 1.1;
+    color: var(--pluma);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
   }
-  .datos {
-    min-width: 0;
-  }
+
   .nombre {
     font-family: var(--font-titulo);
     font-stretch: 118%;
     font-weight: 820;
-    font-size: clamp(1.6rem, 1.1rem + 2.4vw, 3.3rem);
-    line-height: 1.02;
-    letter-spacing: -0.025em;
-    color: var(--tinta);
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
   .rol {
-    margin-top: 0.45rem;
-    font-size: clamp(1.1rem, 0.95rem + 0.8vw, 1.6rem);
+    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem);
     font-stretch: 105%;
-    font-weight: 700;
-    color: var(--tinta-2);
+    font-weight: 720;
+    line-height: 1.2;
     letter-spacing: -0.01em;
   }
   .lugar {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-top: 0.4rem;
-    font-size: 1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .promesa {
+    font-family: var(--font-titulo);
+    font-stretch: 100%;
+    font-weight: 760;
+    font-size: clamp(2.3rem, 1.2rem + 4.6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: -0.032em;
+    color: var(--pluma);
+    max-width: 14ch;
+    text-wrap: balance;
+    padding-block: 0.35rem 0;
+  }
+  .apoyo {
+    margin-top: 1.25rem;
+    max-width: 52ch;
+    font-size: 1.1rem;
     color: var(--tinta-2);
   }
   .acciones {
-    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin-top: 1rem;
   }
   .acciones .boton {
     background: var(--papel);
   }
-  .acciones .boton-lleno {
-    background: var(--tinta);
-  }
+  .acciones .boton-lleno,
   .acciones .boton:hover {
     background: var(--tinta);
   }
@@ -234,55 +213,44 @@ const verificables = CERTIFICACIONES.filter((c) => c.verificar).length
     font-family: var(--font-mono);
   }
 
-  /* ── Promesa ── */
-  .promesa {
-    font-family: var(--font-titulo);
-    font-stretch: 100%;
-    font-weight: 760;
-    font-size: clamp(2.2rem, 1.3rem + 4vw, 4.2rem);
-    line-height: 1;
-    letter-spacing: -0.032em;
-    color: var(--pluma);
-    max-width: 17ch;
-    text-wrap: balance;
-    padding-block: 0.4rem 0.3rem;
-  }
-
-  /* ── Pruebas ── */
-  .pruebas {
-    display: grid;
-    gap: 1px;
-    background: var(--forma);
-  }
-
   @media (min-width: 48rem) {
-    .ficha {
-      grid-template-columns: 13rem minmax(0, 1fr);
-      gap: 0 1.5rem;
-      padding: 1.25rem;
-    }
-    .retrato {
-      grid-row: 1 / span 2;
-    }
-    .datos {
-      align-self: end;
-    }
-    .acciones {
-      grid-column: 2;
-      align-self: start;
+    .boleta {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        "promesa promesa"
+        "ficha contacto"
+        "certs ruta"
+        "casos casos";
     }
     .c-promesa {
-      padding-block: 1.3rem 1.5rem;
-    }
-    .pruebas {
-      grid-template-columns: 1.3fr 1fr 1fr;
+      padding: 1.4rem 1.4rem 1.6rem;
     }
   }
   @media (min-width: 64rem) {
-    .ficha {
-      grid-template-columns: 17rem minmax(0, 1fr);
-      gap: 0 2rem;
-      padding: 1.5rem;
+    .boleta {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) 21rem;
+      grid-template-areas:
+        "promesa promesa promesa ficha"
+        "promesa promesa promesa contacto"
+        "certs ruta casos casos";
+    }
+    .c-promesa {
+      padding: 1.6rem 1.75rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .c-ficha,
+    .c-contacto {
+      padding: 1.1rem 1.25rem 1.2rem;
+    }
+    .acciones {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .acciones .boton {
+      width: 100%;
+      justify-content: flex-start;
     }
   }
 </style>

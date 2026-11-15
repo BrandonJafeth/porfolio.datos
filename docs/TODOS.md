@@ -9,9 +9,9 @@ Buscá `TODO_` en el repo para encontrarlos. Mientras falten, los botones y enla
 | `TODO_DETALLE_TUTORIA` | `src/data/perfil.ts` | Qué cursos acompañabas como tutor (opcional) |
 | `TODO_GITHUB_USUARIO` | caso de ejemplo (borrador) | Solo afecta al ejemplo ficticio. Podés borrar ese caso cuando publiques el primero real |
 
-Ya resueltos: LinkedIn, GitHub, email (`brandoncarrilloworks@gmail.com`), foto (`src/assets/foto.avif`) y los 5 links de verificación de certificaciones.
+Ya resueltos: LinkedIn, GitHub, email (`brandoncarrilloworks@gmail.com`) y los 5 links de verificación de certificaciones. El hero va sin foto (decisión tuya).
 
 Pendientes de revisar por vos:
 - Resumen de cada experiencia (una línea) en `EXPERIENCIA`.
 - `semanasCompletadas` en `src/data/ruta.json`: marcalas a mano cada semana.
-- La carpeta `assets/` de la raíz (tu foto original) ya no se usa: el sitio lee `src/assets/foto.avif`. Podés borrarla.
+- La carpeta `assets/` de la raíz (tu foto) no la usa el sitio; podés guardarla o borrarla.

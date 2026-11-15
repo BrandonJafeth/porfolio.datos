@@ -35,7 +35,7 @@ Categórica para futuras series: pluma, `--chart-2` naranja, `--chart-3` grafito
 - **₡:** ni Archivo ni Public Sans lo traen; "Colon CR" (Noto Sans, `unicode-range: U+20A1`) lo dibuja igual en todos los sistemas.
 
 ## Componentes clave
-- **Hero:** boleta con campos Ocupación (H1), Lugar, Fotografía, ¿Qué hace? (promesa en pluma), Herramientas y Ruta (casillas).
+- **Hero (sin foto):** la promesa en pluma es la protagonista; a la derecha la ficha (Nombre, Ocupación = H1, Lugar) y Contacto; abajo Certificaciones, Ruta (casillas) y acceso a Casos.
 - **Caso:** P{n} + pregunta; campo Respuesta con relleno; cifras como campos; gráfico dentro de un campo con la fuente "cosida" en el pie; confianza como pregunta de opción única.
 - **Interruptor de lectura y filtros:** opciones con casillas cuadradas; la elegida se marca en pluma.
 
