@@ -6,7 +6,7 @@ import SystemIcon from "./icons/System.astro"
 const OPCIONES = [
   { valor: "light", texto: "Claro" },
   { valor: "dark", texto: "Oscuro" },
-  { valor: "system", texto: "Como el sistema" },
+  { valor: "system", texto: "Sistema" },
 ] as const
 ---
 
@@ -27,7 +27,7 @@ const OPCIONES = [
   <ul
     id="tema-menu"
     hidden
-    class="absolute right-0 top-12 z-30 min-w-44 border-2 border-forma-fuerte bg-papel-2 text-base shadow-flotante"
+    class="absolute right-0 top-12 z-30 w-36 border-2 border-forma-fuerte bg-papel-2 py-1 text-[0.95rem] shadow-flotante"
   >
     {
       OPCIONES.map((o) => (
@@ -35,7 +35,7 @@ const OPCIONES = [
           <button
             type="button"
             data-tema={o.valor}
-            class="tema-opcion flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-tinta-2 hover:bg-forma-f hover:text-tinta"
+            class="tema-opcion flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left whitespace-nowrap text-tinta-2 hover:bg-forma-f hover:text-tinta"
           >
             {o.texto}
             <svg class="marca size-4 text-pluma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>

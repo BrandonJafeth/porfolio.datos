@@ -172,12 +172,6 @@
     line-height: 1.06;
   }
 
-  p,
-  li,
-  dd {
-    text-wrap: pretty;
-  }
-
   ::selection {
     background: var(--pluma);
     color: var(--pluma-ink);

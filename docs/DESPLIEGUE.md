@@ -15,7 +15,31 @@ Todo lo que necesita Cloudflare ya está en el repo:
 |---|---|
 | `wrangler.jsonc` | Nombre del Worker, carpeta `dist`, página 404 y dominio `datos.brandoncarrillo.dev` |
 | `public/_headers` | Caché larga para `/_astro/*` y cabeceras de seguridad básicas |
-| `.nvmrc` | Node 22.12.0 o superior (lo pide Astro 7) |
+| `.nvmrc` | Node 24.12.0 (Astro 7.4 pide **22.23.4 o superior**) |
+| `package.json` → `packageManager` | pnpm 11.1.2 |
+| `pnpm-workspace.yaml` | Permite los scripts de `esbuild`, `workerd` y `sharp` (pnpm 10 y 11) |
+
+> **Error "Node.js v22.12.0 is not supported by Astro"**: la versión anterior del `.nvmrc` decía 22.12.0. Ya está en 24.12.0. Si tu proyecto de Cloudflare tiene una variable `NODE_VERSION` vieja, cambiala a `24.12.0` o borrala.
+
+---
+
+## 0. Si ya creaste el proyecto en **Cloudflare Pages**
+
+Pages sigue funcionando para sitios estáticos. Configuración exacta:
+
+1. **Settings → Build → Build configuration**
+   - **Framework preset:** Astro
+   - **Build command:** `pnpm build`
+   - **Build output directory:** `dist`
+   - **Root directory:** vacío
+2. **Settings → Variables and secrets** (entorno *Production* y *Preview*):
+   - `NODE_VERSION` = `24.12.0`
+   - `PNPM_VERSION` = `11.1.2` (sin esto Pages usa pnpm 10 y avisa "Ignored build scripts")
+3. **Retry deployment** en el último despliegue fallido.
+4. Dominio: **Custom domains → Set up a custom domain → `datos.brandoncarrillo.dev`**.
+5. Deploy hook en Pages: **Settings → Builds → Deploy hooks → Add deploy hook** (nombre y rama `main`). Se usa igual que el de Workers (POST a la URL, guardada como secreto).
+
+El `wrangler.jsonc` es para Workers; Pages lo ignora porque no tiene `pages_build_output_dir`. Si Pages muestra un aviso sobre ese archivo, no afecta el build. Si más adelante pasás a Workers, seguí la sección 1.
 
 ---
 
@@ -31,7 +55,7 @@ Todo lo que necesita Cloudflare ya está en el repo:
    - **Variables de entorno:** ninguna. **No** agregues `MOSTRAR_BORRADORES`, porque esa variable publica los borradores.
 5. Hacé clic en **Save and Deploy**.
 
-> Workers Builds detecta pnpm por el `pnpm-lock.yaml`, que ahora sí se versiona: lo quité del `.gitignore`. Su Node por defecto cumple con Astro 7. Si un build falla por la versión de Node, agregá la variable `NODE_VERSION=22.12.0`.
+> Workers Builds detecta pnpm por el `pnpm-lock.yaml`, que ahora sí se versiona: lo quité del `.gitignore`. Su Node por defecto cumple con Astro 7. Si un build falla por la versión de Node, agregá la variable `NODE_VERSION=24.12.0`.
 
 ### Alternativa: desplegar desde tu máquina
 

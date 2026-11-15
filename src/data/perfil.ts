@@ -27,10 +27,10 @@ export const PERFIL = {
     linkedin: "https://www.linkedin.com/in/brandonca/",
     github: "https://github.com/BrandonJafeth",
     cv: "TODO_CV_URL",
-    email: "TODO_EMAIL",
+    email: "brandoncarrilloworks@gmail.com",
     certificacionesLinkedIn: "https://www.linkedin.com/in/brandonca/details/certifications/",
   },
-  /** TODO_FOTO: colocá tu foto en src/assets/foto.jpg (o .png/.webp) y se usa sola. */
+  /** Foto: src/assets/foto.avif (se detecta sola; acepta .jpg/.png/.webp/.avif). */
 } as const
 
 /** true si el valor sigue siendo un placeholder. */
@@ -133,8 +133,19 @@ export const CERTIFICACIONES: Certificacion[] = [
     anio: "2026",
     verificar: "https://verify.skilljar.com/c/qixkqnqjegc9",
   },
-  { nombre: "Claude Code 101", emisor: "Anthropic", logo: "anthropic", anio: "2026" },
-  { nombre: "Scrum Fundamentals Certified (SFC)", emisor: "SCRUMstudy", logo: "scrumstudy" },
+  {
+    nombre: "Claude Code 101",
+    emisor: "Anthropic",
+    logo: "anthropic",
+    anio: "2026",
+    verificar: "https://verify.skilljar.com/c/zuhp4nsa52a8",
+  },
+  {
+    nombre: "Scrum Fundamentals Certified (SFC)",
+    emisor: "SCRUMstudy",
+    logo: "scrumstudy",
+    verificar: "https://www.scrumstudy.com/certification/verify?type=SFC&number=1023406",
+  },
 ]
 
 /** Links de verificación públicos (también van en JSON-LD sameAs). */
