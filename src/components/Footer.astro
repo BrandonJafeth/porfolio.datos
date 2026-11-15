@@ -1,0 +1,42 @@
+---
+import { PERFIL, esPendiente } from "@/data/perfil"
+const anio = new Date().getFullYear()
+
+const enlaces = [
+  { texto: "LinkedIn", url: PERFIL.enlaces.linkedin },
+  { texto: "GitHub", url: PERFIL.enlaces.github },
+  { texto: "RSS de casos", url: "/rss.xml" },
+].filter((e) => !esPendiente(e.url))
+---
+
+<footer class="mt-24 border-t border-rule">
+  <div class="contenedor flex flex-col gap-6 py-10 text-base text-ink-2 md:flex-row md:items-end md:justify-between">
+    <div class="space-y-1">
+      <p class="font-serif text-lg text-ink">{PERFIL.nombre}</p>
+      <p>{PERFIL.lugar}</p>
+      <p class="text-sm">
+        © {anio}. Datos de fuentes públicas citadas en cada caso.
+      </p>
+    </div>
+    <div class="space-y-3 md:text-right">
+      {
+        enlaces.length > 0 && (
+          <ul class="flex flex-wrap gap-x-5 gap-y-1 md:justify-end">
+            {enlaces.map((e) => (
+              <li>
+                <a href={e.url} class="underline-offset-4 hover:text-ink">
+                  {e.texto}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <p class="text-sm">
+        Diseño basado en
+        <a href="https://github.com/midudev/porfolio.dev" class="underline hover:text-ink" rel="noopener">porfolio.dev de midudev</a>
+        · <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" class="underline hover:text-ink" rel="license noopener">CC BY-NC 4.0</a>
+      </p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,52 @@
+---
+/**
+ * Gráfico de líneas estático (Observable Plot → SVG en build).
+ * Uso: <GraficoLinea slug="mi-caso" archivo="tipo-cambio" />  o  <GraficoLinea datos={json} />
+ * El título (la conclusión) sale del JSON; podés sobrescribirlo con `titulo`.
+ */
+import Figura from "./Figura.astro"
+import { cargarGrafico, esquemaLinea, type DatosLinea } from "@/lib/datos"
+import { renderLinea } from "@/lib/graficos"
+import { formatear } from "@/lib/formato"
+
+interface Props {
+  slug?: string
+  archivo?: string
+  datos?: DatosLinea
+  titulo?: string
+  nivel?: 2 | 3
+}
+
+const { slug, archivo, titulo, nivel } = Astro.props
+const crudo = Astro.props.datos ?? (slug && archivo ? cargarGrafico(slug, archivo) : undefined)
+if (!crudo || crudo.tipo !== "linea") throw new Error("<GraficoLinea> necesita datos de tipo 'linea'.")
+const d = esquemaLinea.parse(crudo)
+
+const fmtX = (x: string | number) =>
+  d.ejeX.tipo === "fecha"
+    ? new Intl.DateTimeFormat("es-CR", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(String(x)))
+    : String(x)
+
+const xs = [...new Set(d.series.flatMap((s) => s.puntos.map((p) => String(p.x))))]
+const tabla = {
+  columnas: [d.ejeX.etiqueta ?? (d.ejeX.tipo === "fecha" ? "Fecha" : ""), ...d.series.map((s) => s.nombre)],
+  filas: xs.map((x) => [
+    fmtX(x),
+    ...d.series.map((s) => {
+      const p = s.puntos.find((q) => String(q.x) === x)
+      return p ? formatear(p.y, d.ejeY.formato) : "—"
+    }),
+  ]),
+}
+---
+
+<Figura
+  titulo={titulo ?? d.titulo}
+  resumen={d.resumen}
+  fuente={d.fuente}
+  actualizado={d.actualizado}
+  variantes={renderLinea(d)}
+  tabla={tabla}
+  nivel={nivel}
+  ficticio={d.ficticio}
+/>

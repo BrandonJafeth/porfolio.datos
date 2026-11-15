@@ -1,0 +1,32 @@
+---
+/**
+ * Logo monocromo del emisor de una certificación (hereda currentColor).
+ * Cisco y Anthropic: trazados de Simple Icons (CC0), usados solo para identificar al emisor.
+ */
+import { siCisco, siAnthropic } from "simple-icons"
+import type { LogoEmisor } from "@/data/perfil"
+
+interface Props {
+  logo: LogoEmisor
+  class?: string
+}
+const { logo, class: clase } = Astro.props
+const trazos: Partial<Record<LogoEmisor, { path: string; title: string }>> = {
+  cisco: siCisco,
+  anthropic: siAnthropic,
+}
+const icono = trazos[logo]
+---
+
+{
+  icono ? (
+    <svg class={clase} viewBox="0 0 24 24" fill="currentColor" role="img" aria-label={icono.title}>
+      <path d={icono.path} />
+    </svg>
+  ) : (
+    <svg class={clase} viewBox="0 0 24 24" role="img" aria-label="SCRUMstudy">
+      <rect x="1.5" y="1.5" width="21" height="21" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+      <text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="inherit">SS</text>
+    </svg>
+  )
+}

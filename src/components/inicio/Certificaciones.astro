@@ -1,0 +1,53 @@
+---
+/** Lista de certificaciones con emisor, año, logo y botón "Verificar" (sin imágenes de certificados). */
+import LogoEmisor from "@/components/LogoEmisor.astro"
+import ExternalLink from "@/components/icons/ExternalLink.astro"
+import { CERTIFICACIONES, PERFIL } from "@/data/perfil"
+---
+
+<div>
+  <ol class="certs divide-y divide-rule border-y border-rule">
+    {
+      CERTIFICACIONES.map((c) => (
+        <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-4 sm:grid-cols-[2.25rem_minmax(0,1fr)_auto] sm:items-center">
+          <LogoEmisor logo={c.logo} class="mt-0.5 size-7 text-ink-2 sm:mt-0" />
+          <div>
+            <p class="text-lg font-bold leading-snug">{c.nombre}</p>
+            <p class="text-base text-ink-2">{[c.emisor, c.anio, ...(c.detalle ?? [])].filter(Boolean).join(", ")}</p>
+            {c.emisorDetalle && <p class="text-sm text-ink-3">{c.emisorDetalle}</p>}
+          </div>
+          {c.verificar ? (
+            <a
+              href={c.verificar}
+              target="_blank"
+              rel="noopener"
+              class="verificar col-start-2 inline-flex items-center gap-1.5 justify-self-start sm:col-start-auto sm:justify-self-end"
+              aria-label={`Verificar ${c.nombre} (abre en una pestaña nueva)`}
+            >
+              Verificar <ExternalLink class="size-4" />
+            </a>
+          ) : (
+            <span class="col-start-2 text-sm text-ink-3 sm:col-start-auto sm:justify-self-end">Sin link público</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+  <a href={PERFIL.enlaces.certificacionesLinkedIn} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 font-bold text-accent underline">
+    Ver todas en LinkedIn <ExternalLink class="size-4" />
+  </a>
+</div>
+
+<style>
+  .verificar {
+    border: 1px solid var(--rule);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 650;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .verificar:hover {
+    border-color: var(--ink);
+  }
+</style>

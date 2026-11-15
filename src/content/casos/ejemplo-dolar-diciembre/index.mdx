@@ -1,0 +1,83 @@
+---
+# ⚠️ CASO DE EJEMPLO — DATOS FICTICIOS. Solo para probar el diseño.
+# estado: borrador → nunca se genera en producción.
+titulo: "Estacionalidad mensual del tipo de cambio CRC/USD (ejemplo ficticio)"
+pregunta: "¿En qué mes conviene más comprar dólares?"
+respuestaCorta: "En estos datos de muestra, febrero sale más barato y diciembre más caro: unos ₡8 de diferencia por dólar."
+cifras:
+  - valor: "₡8"
+    etiqueta: "de diferencia por dólar"
+    significado: "Es la distancia, en {{promedio}}, entre el mes más caro y el más barato."
+  - valor: "4 de 5"
+    etiqueta: "años con diciembre caro"
+    significado: "Casi todos los años, diciembre quedó por encima de lo normal."
+  - valor: "₡800"
+    etiqueta: "de ahorro al comprar $100"
+    significado: "Si comprás $100 en febrero en vez de diciembre."
+porQueImporta:
+  - "Si vas a pagar algo en dólares, elegir el mes puede ahorrarte plata."
+  - "Una posible razón: con el aguinaldo, más gente compra dólares en diciembre."
+  - "No es una regla fija. Un año puede romper el patrón."
+audiencia: "Personas que ahorran o pagan cosas en dólares"
+tema: "Economía"
+fase: 1
+herramientas: ["SQL", "Python", "Estadística"]
+fuentes:
+  - nombre: "BCCR — Indicadores económicos (fuente real a usar)"
+    url: "https://gee.bccr.fi.cr/indicadoreseconomicos/"
+confianza: "baja"
+confianzaMotivo: "Son datos inventados para probar el diseño. No sacás ninguna conclusión de aquí."
+limitaciones:
+  - "Los datos son ficticios: este caso existe solo para probar el diseño."
+  - "Cinco años es poco para hablar de un patrón estable."
+  - "La {{estacionalidad}} no predice el futuro: un choque externo la rompe."
+repo: "https://github.com/TODO_GITHUB_USUARIO/ejemplo-dolar-diciembre"
+fecha: 2026-11-15
+estado: "borrador"
+graficoPrincipal: "estacionalidad"
+---
+
+import GraficoBarras from "@/components/graficos/GraficoBarras.astro"
+import Anotacion from "@/components/graficos/Anotacion.astro"
+
+## Método
+
+Tomé el <Termino t="tipo de cambio" /> de venta diario y lo resumí por mes.
+Después comparé cada mes contra el <Termino t="promedio" /> de su propio año.
+Así se ve la <Termino t="estacionalidad" /> sin que la tendencia de largo plazo la tape.
+
+### 1. Promedio mensual en SQL
+
+```sql
+-- Tipo de cambio de venta: promedio por año y mes
+SELECT
+  EXTRACT(YEAR  FROM fecha) AS anio,
+  EXTRACT(MONTH FROM fecha) AS mes,
+  AVG(venta)                AS venta_promedio
+FROM tipo_cambio
+WHERE fecha BETWEEN DATE '2021-01-01' AND DATE '2025-12-31'
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+### 2. Diferencia contra el promedio del año en Python
+
+```python
+import pandas as pd
+
+mensual = pd.read_sql(QUERY, conexion)
+mensual["desvio"] = (
+    mensual["venta_promedio"]
+    - mensual.groupby("anio")["venta_promedio"].transform("mean")
+)
+patron = mensual.groupby("mes")["desvio"].mean().round(1)
+patron.to_json("estacionalidad.json")  # este sitio solo lee el resultado
+```
+
+### 3. ¿Se repite cada año?
+
+<GraficoBarras slug="ejemplo-dolar-diciembre" archivo="diciembre-por-anio" />
+
+<Anotacion titulo="Ojo con 2022">
+  En el ejemplo, ese año diciembre quedó casi igual al promedio. Por eso la confianza no puede ser alta.
+</Anotacion>

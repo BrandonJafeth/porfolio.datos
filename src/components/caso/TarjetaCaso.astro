@@ -1,0 +1,98 @@
+---
+/**
+ * Fila de caso para listados: lo más grande es la pregunta y la respuesta, no el título técnico.
+ */
+import { textoPlano, urlCaso, type Caso } from "@/lib/casos"
+import { cargarGrafico } from "@/lib/datos"
+import { sparkline } from "@/lib/graficos"
+import { fecha } from "@/lib/formato"
+import { slugHerramienta } from "@/lib/herramientas"
+import ArrowRight from "@/components/icons/ArrowRight.astro"
+
+interface Props {
+  caso: Caso
+  /** Encabezado: h2 en /casos, h3 dentro de secciones del inicio. */
+  nivel?: 2 | 3
+}
+
+const { caso, nivel = 3 } = Astro.props
+const { data } = caso
+const cifra = data.cifras[0]!
+const grafico = cargarGrafico(caso.id, data.graficoPrincipal)
+const serie =
+  grafico.tipo === "linea" ? (grafico.series.find((s) => s.destacar) ?? grafico.series[0])?.puntos.map((p) => p.y) : undefined
+const spark = serie ? sparkline(serie) : null
+const H = `h${nivel}` as "h2" | "h3"
+const tituloId = `caso-${caso.id}`
+---
+
+<article
+  class="caso relative grid gap-x-10 gap-y-5 border-t border-rule py-8 md:grid-cols-[minmax(0,1fr)_14rem]"
+  data-herramientas={data.herramientas.map(slugHerramienta).join(" ")}
+  data-tema={slugHerramienta(data.tema)}
+  aria-labelledby={tituloId}
+>
+  <div>
+    <p class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-3">
+      <span class="versalitas text-ink-2">{data.tema}</span>
+      <time datetime={data.fecha.toISOString()}>{fecha(data.fecha, "corto")}</time>
+      {data.estado === "borrador" && <span class="borrador rounded px-1.5 font-bold">Borrador</span>}
+    </p>
+    <H id={tituloId} class="font-serif text-[1.75rem] leading-[1.12] sm:text-[2.1rem]" style={`view-transition-name: pregunta-${caso.id}`}>
+      <a href={urlCaso(caso)} class="enlace-caso no-underline">{data.pregunta}</a>
+    </H>
+    <p class="medida mt-3 text-lg leading-snug text-ink-2 sm:text-xl">{textoPlano(data.respuestaCorta)}</p>
+    <ul class="mt-4 flex flex-wrap gap-1.5" aria-label="Herramientas">
+      {data.herramientas.map((h) => <li class="rounded-full border border-rule px-2.5 py-0.5 text-sm text-ink-2">{h}</li>)}
+    </ul>
+  </div>
+
+  <div class="flex items-end justify-between gap-4 md:flex-col md:items-start md:justify-start md:border-l md:border-rule md:pl-6">
+    <div>
+      <p class="num font-serif text-4xl leading-none text-accent">{cifra.valor}</p>
+      <p class="mt-1.5 text-sm leading-snug text-ink-2">{cifra.etiqueta}</p>
+    </div>
+    {
+      spark && (
+        <svg class="spark text-accent" width={spark.ancho} height={spark.alto} viewBox={`-2 -2 ${spark.ancho + 4} ${spark.alto + 4}`} aria-hidden="true">
+          <path d={spark.d} fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+          <circle cx={spark.ultimo[0]} cy={spark.ultimo[1]} r="3" fill="currentColor" />
+        </svg>
+      )
+    }
+    <span class="ir mt-auto hidden items-center gap-1 text-base font-bold text-accent md:inline-flex" aria-hidden="true">
+      Ver caso <ArrowRight class="size-4 transition-transform" />
+    </span>
+  </div>
+</article>
+
+<style>
+  .enlace-caso::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .enlace-caso:focus-visible {
+    outline: none;
+  }
+  .caso:has(.enlace-caso:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  .caso :global(h2),
+  .caso :global(h3) {
+    transition: color 200ms var(--ease-salida);
+  }
+  .caso:hover :global(h2),
+  .caso:hover :global(h3) {
+    color: var(--accent);
+  }
+  .caso:hover .ir :global(svg) {
+    translate: 4px 0;
+  }
+  .borrador {
+    background: color-mix(in oklab, var(--nivel-media) 16%, transparent);
+    color: var(--nivel-media);
+  }
+</style>

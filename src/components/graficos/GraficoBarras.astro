@@ -1,0 +1,39 @@
+---
+/**
+ * Gráfico de barras estático (Observable Plot → SVG en build).
+ * Uso: <GraficoBarras slug="mi-caso" archivo="por-provincia" />  o  <GraficoBarras datos={json} />
+ */
+import Figura from "./Figura.astro"
+import { cargarGrafico, esquemaBarras, type DatosBarras } from "@/lib/datos"
+import { renderBarras } from "@/lib/graficos"
+import { formatear } from "@/lib/formato"
+
+interface Props {
+  slug?: string
+  archivo?: string
+  datos?: DatosBarras
+  titulo?: string
+  nivel?: 2 | 3
+}
+
+const { slug, archivo, titulo, nivel } = Astro.props
+const crudo = Astro.props.datos ?? (slug && archivo ? cargarGrafico(slug, archivo) : undefined)
+if (!crudo || crudo.tipo !== "barras") throw new Error("<GraficoBarras> necesita datos de tipo 'barras'.")
+const d = esquemaBarras.parse(crudo)
+
+const tabla = {
+  columnas: ["", d.valor.etiqueta],
+  filas: d.barras.map((b) => [b.etiqueta, formatear(b.valor, d.valor.formato)]),
+}
+---
+
+<Figura
+  titulo={titulo ?? d.titulo}
+  resumen={d.resumen}
+  fuente={d.fuente}
+  actualizado={d.actualizado}
+  variantes={renderBarras(d)}
+  tabla={tabla}
+  nivel={nivel}
+  ficticio={d.ficticio}
+/>

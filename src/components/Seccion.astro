@@ -1,0 +1,26 @@
+---
+/** Sección del inicio: regla gruesa arriba, título serif y acción opcional a la derecha. */
+interface Props {
+  id: string
+  titulo: string
+  accion?: { texto: string; url: string }
+  class?: string
+}
+const { id, titulo, accion, class: clase } = Astro.props
+import ArrowRight from "@/components/icons/ArrowRight.astro"
+---
+
+<section id={id} aria-labelledby={`${id}-t`} class:list={["contenedor scroll-mt-6 py-14 sm:py-20", clase]}>
+  <div class="mb-8 flex items-end justify-between gap-4 border-t-2 border-rule-strong pt-4 sm:mb-10">
+    <h2 id={`${id}-t`} class="text-3xl sm:text-[2.6rem]">{titulo}</h2>
+    {
+      accion && (
+        <a href={accion.url} class="group mb-1 inline-flex shrink-0 items-center gap-1 text-base font-bold text-accent no-underline">
+          {accion.texto}
+          <ArrowRight class="size-4 transition-transform group-hover:translate-x-1" />
+        </a>
+      )
+    }
+  </div>
+  <slot />
+</section>

@@ -1,0 +1,119 @@
+---
+import "@/styles/global.css"
+import Header from "@/components/Header.astro"
+import Footer from "@/components/Footer.astro"
+import { SITIO, PERFIL } from "@/data/perfil"
+import fuenteTitulos from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url"
+import fuenteTexto from "@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url"
+
+interface Props {
+  title: string
+  description: string
+  /** Ruta absoluta o relativa de la imagen OG (1200×630). */
+  image?: string
+  imageAlt?: string
+  canonical?: string
+  type?: "website" | "article"
+  jsonLd?: Record<string, unknown>[]
+  publishedTime?: Date
+  noindex?: boolean
+  /** Usa `title` tal cual, sin agregar " · Brandon Carrillo". */
+  tituloExacto?: boolean
+}
+
+const {
+  title,
+  description,
+  image = "/og.png",
+  imageAlt = SITIO.descripcion,
+  canonical = new URL(Astro.url.pathname, Astro.site).toString(),
+  type = "website",
+  jsonLd = [],
+  publishedTime,
+  noindex = false,
+  tituloExacto = false,
+} = Astro.props
+
+const site = Astro.site ?? new URL(SITIO.url)
+const ogImage = new URL(image, site).toString()
+const tituloCompleto = tituloExacto ? title : `${title} · ${PERFIL.nombreCorto}`
+---
+
+<!doctype html>
+<html lang="es-CR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <link rel="preload" href={fuenteTitulos} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fuenteTexto} as="font" type="font/woff2" crossorigin />
+    <meta name="description" content={description} />
+    <meta name="author" content={PERFIL.nombre} />
+    <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`Casos · ${PERFIL.nombreCorto}`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f5f1e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141618" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={SITIO.locale} />
+    <meta property="og:site_name" content={SITIO.nombre} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+
+    <!-- Tema y nivel de lectura antes de pintar (evita parpadeo). -->
+    <script is:inline>
+      ;(function () {
+        var d = document.documentElement
+        d.dataset.js = ""
+        var tema = null
+        var lectura = null
+        try {
+          tema = localStorage.getItem("tema")
+          lectura = localStorage.getItem("lectura")
+        } catch (e) {}
+        var oscuro = window.matchMedia("(prefers-color-scheme: dark)").matches
+        d.dataset.temaPref = tema === "dark" || tema === "light" ? tema : "system"
+        d.dataset.theme = tema === "dark" || tema === "light" ? tema : oscuro ? "dark" : "light"
+        if (lectura === "tecnico") d.dataset.lectura = "tecnico"
+      })()
+    </script>
+
+    <!-- Precarga especulativa sin JavaScript propio (navegadores compatibles). -->
+    <script type="speculationrules" is:inline>
+      {
+        "prefetch": [{ "where": { "href_matches": "/*" }, "eagerness": "moderate" }]
+      }
+    </script>
+    <slot name="head" />
+  </head>
+
+  <body class="bg-paper text-ink antialiased">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+    >
+      Saltar al contenido
+    </a>
+    <Header />
+    <main id="contenido" tabindex="-1" class="flex-1 outline-none">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

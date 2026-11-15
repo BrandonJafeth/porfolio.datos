@@ -1,0 +1,42 @@
+{
+  "tipo": "barras",
+  "ficticio": true,
+  "titulo": "Diciembre quedó caro en 4 de 5 años",
+  "resumen": "Barras: diferencia de diciembre contra el promedio de cada año, de 2021 a 2025. Cuatro años fue positiva; en 2022 fue casi cero. Datos ficticios.",
+  "fuente": {
+    "nombre": "Datos ficticios de muestra (no usar)",
+    "url": "https://gee.bccr.fi.cr/indicadoreseconomicos/"
+  },
+  "valor": {
+    "etiqueta": "Diciembre vs. promedio del año",
+    "formato": "colones"
+  },
+  "orientacion": "horizontal",
+  "barras": [
+    {
+      "etiqueta": "2021",
+      "valor": 4.7,
+      "destacar": true
+    },
+    {
+      "etiqueta": "2022",
+      "valor": -0.2,
+      "destacar": false
+    },
+    {
+      "etiqueta": "2023",
+      "valor": 3.7,
+      "destacar": true
+    },
+    {
+      "etiqueta": "2024",
+      "valor": 4.9,
+      "destacar": true
+    },
+    {
+      "etiqueta": "2025",
+      "valor": 4.3,
+      "destacar": true
+    }
+  ]
+}

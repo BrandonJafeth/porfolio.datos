@@ -1,0 +1,40 @@
+---
+/** Indicador discreto bajo el hero: en qué semana de la ruta voy. Enlaza a /ruta. */
+import { resumenRuta, ruta } from "@/lib/ruta"
+import { fecha } from "@/lib/formato"
+import { t } from "@/i18n"
+
+const r = resumenRuta()
+const texto = !r.empezo
+  ? t("ruta.empieza", { fecha: fecha(ruta.inicio) })
+  : r.termino
+    ? t("ruta.terminada", { total: r.total })
+    : r.enColchon
+      ? t("ruta.colchon", { semana: r.actual, total: r.total })
+      : t("ruta.enProgreso", { semana: r.actual, total: r.total })
+---
+
+<a href="/ruta/" class="indicador-ruta group inline-flex items-center gap-2 text-base text-ink-2 no-underline hover:text-ink">
+  <span class="punto" aria-hidden="true"></span>
+  <span>{texto}</span>
+  <span class="font-bold text-accent underline underline-offset-4">{t("ruta.ver")}</span>
+</a>
+
+<style>
+  .punto {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 50%, transparent);
+    animation: latido 2.4s ease-out infinite;
+  }
+  @keyframes latido {
+    70% {
+      box-shadow: 0 0 0 0.45rem transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+</style>

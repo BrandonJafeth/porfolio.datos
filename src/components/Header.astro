@@ -1,0 +1,70 @@
+---
+import ThemeToggle from "./ThemeToggle.astro"
+import { PERFIL } from "@/data/perfil"
+
+const nav = [
+  { titulo: "Casos", url: "/casos/" },
+  { titulo: "Indicadores", url: "/indicadores/" },
+  { titulo: "Ruta", url: "/ruta/" },
+  { titulo: "Sobre mí", url: "/#sobre-mi" },
+]
+
+const actual = Astro.url.pathname
+const activo = (url: string) => !url.includes("#") && actual.startsWith(url)
+---
+
+<header class="border-b border-rule">
+  <div class="contenedor flex flex-wrap items-center gap-x-6 gap-y-1 py-3 sm:flex-nowrap sm:py-4">
+    <a href="/" class="marca group mr-auto flex items-baseline gap-2 no-underline">
+      <span class="font-serif text-xl font-semibold tracking-tight sm:text-2xl">{PERFIL.nombreCorto}</span>
+      <span class="versalitas text-sm text-accent">datos</span>
+    </a>
+
+    <div class="order-last -mx-1 w-full overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">
+      <nav aria-label="Principal">
+        <ul class="flex gap-1 whitespace-nowrap [&>li]:shrink-0">
+          {
+            nav.map((l) => (
+              <li>
+                <a
+                  href={l.url}
+                  aria-current={activo(l.url) ? "page" : undefined}
+                  class="enlace inline-block rounded-md px-2.5 py-2 text-base text-ink-2 no-underline transition-colors hover:text-ink"
+                >
+                  {l.titulo}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .enlace {
+    position: relative;
+  }
+  .enlace::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.625rem;
+    bottom: 0.3rem;
+    height: 2px;
+    background: var(--accent);
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale 260ms var(--ease-salida);
+  }
+  .enlace:hover::after,
+  .enlace[aria-current="page"]::after {
+    scale: 1 1;
+  }
+  .enlace[aria-current="page"] {
+    color: var(--ink);
+    font-weight: 650;
+  }
+</style>

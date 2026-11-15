@@ -1,0 +1,413 @@
+@import "tailwindcss";
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
+
+/*
+ * Boletín cívico — tokens.
+ * Papel cálido, tinta oscura, UN acento (verde-azulado) y gris para todo lo demás.
+ * Contrastes verificados (WCAG AA) contra --paper en ambos modos.
+ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: light;
+  --paper: #f5f1e8;
+  --paper-2: #fbf9f4;
+  --paper-3: #ece6d9;
+  --ink: #1b1e22;
+  --ink-2: #4b5057;
+  --ink-3: #62666c;
+  --rule: #d6cdbc;
+  --rule-strong: #1b1e22;
+  --accent: #0d6a65;
+  --accent-strong: #08524e;
+  --accent-ink: #ffffff;
+  --accent-wash: #c9e4de;
+  --chart-muted: #a49d8e;
+  --chart-grid: #e2dbcc;
+  --chart-accent: #0d6a65;
+  --chart-alt: #b0520b;
+  --nivel-media: #845400;
+  --nivel-baja: #a1361b;
+  --shadow: 0 1px 2px rgb(27 30 34 / 0.06), 0 8px 24px -12px rgb(27 30 34 / 0.18);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #141618;
+  --paper-2: #1b1e21;
+  --paper-3: #23272b;
+  --ink: #ede8de;
+  --ink-2: #b6b0a5;
+  --ink-3: #9c978d;
+  --rule: #33383d;
+  --rule-strong: #ede8de;
+  --accent: #5fc7bb;
+  --accent-strong: #8adbd1;
+  --accent-ink: #0a1f1d;
+  --accent-wash: rgb(95 199 187 / 0.22);
+  --chart-muted: #5d6267;
+  --chart-grid: #2a2e32;
+  --chart-accent: #5fc7bb;
+  --chart-alt: #f0a35e;
+  --nivel-media: #e3b24c;
+  --nivel-baja: #f28c70;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+/* Sin JavaScript: seguir la preferencia del sistema. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --paper: #141618;
+    --paper-2: #1b1e21;
+    --paper-3: #23272b;
+    --ink: #ede8de;
+    --ink-2: #b6b0a5;
+    --ink-3: #9c978d;
+    --rule: #33383d;
+    --rule-strong: #ede8de;
+    --accent: #5fc7bb;
+    --accent-strong: #8adbd1;
+    --accent-ink: #0a1f1d;
+    --accent-wash: rgb(95 199 187 / 0.22);
+    --chart-muted: #5d6267;
+    --chart-grid: #2a2e32;
+    --chart-accent: #5fc7bb;
+    --chart-alt: #f0a35e;
+    --nivel-media: #e3b24c;
+    --nivel-baja: #f28c70;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+  --color-nivel-media: var(--nivel-media);
+  --color-nivel-baja: var(--nivel-baja);
+
+  --font-serif: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Atkinson Hyperlegible Next Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.6;
+
+  --shadow-papel: var(--shadow);
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scrollbar-color: var(--rule) transparent;
+    scroll-padding-top: 1.5rem;
+  }
+
+  body {
+    font-size: 1.125rem;
+    line-height: 1.65;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 48rem) {
+    body {
+      font-size: 1.1875rem;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    font-weight: 560;
+  }
+
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--accent);
+  }
+
+  hr {
+    border-color: var(--rule);
+  }
+}
+
+/* ── Utilidades del sistema ──────────────────────────── */
+
+@utility num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+@utility medida {
+  max-width: 65ch;
+}
+
+@utility contenedor {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (min-width: 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility versalitas {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  font-weight: 650;
+}
+
+/* Subrayado tipo resaltador: la firma visual del sitio. */
+@utility resaltado {
+  background-image: linear-gradient(var(--accent-wash), var(--accent-wash));
+  background-repeat: no-repeat;
+  background-size: 100% 0.55em;
+  background-position: 0 88%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-inline: 0.08em;
+}
+
+/* ── Movimiento ───────────────────────────────────────── */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-group(*) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes trazo {
+  from {
+    background-size: 0% 0.55em;
+  }
+  to {
+    background-size: 100% 0.55em;
+  }
+}
+
+.trazo {
+  animation: trazo 900ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .trazo {
+    animation: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ── Prosa de la capa técnica (MDX) ───────────────────── */
+
+.prosa {
+  max-width: 68ch;
+}
+.prosa > * + * {
+  margin-top: 1em;
+}
+.prosa h2 {
+  font-size: 1.5rem;
+  margin-top: 2.25rem;
+}
+.prosa h3 {
+  font-size: 1.25rem;
+  margin-top: 1.75rem;
+}
+.prosa h2 + *,
+.prosa h3 + * {
+  margin-top: 0.6rem;
+}
+.prosa a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.prosa ul,
+.prosa ol {
+  padding-left: 1.25rem;
+}
+.prosa ul {
+  list-style: disc;
+}
+.prosa ol {
+  list-style: decimal;
+}
+.prosa li + li {
+  margin-top: 0.35em;
+}
+.prosa li::marker {
+  color: var(--ink-3);
+}
+.prosa strong {
+  font-weight: 700;
+}
+.prosa :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--paper-3);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prosa blockquote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.15em;
+  color: var(--ink-2);
+  padding-left: 1rem;
+  border-left: 1px solid var(--rule);
+}
+.prosa table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95em;
+}
+.prosa th,
+.prosa td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+.prosa th {
+  font-weight: 700;
+  border-bottom-color: var(--rule-strong);
+}
+
+/* Bloques de código (Shiki con temas claro/oscuro por variables). */
+.astro-code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 1rem 1.15rem;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  background-color: var(--shiki-light-bg) !important;
+}
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+}
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+}
+:root[data-theme="dark"] .astro-code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .astro-code,
+  :root:not([data-theme]) .astro-code span {
+    color: var(--shiki-dark) !important;
+  }
+  :root:not([data-theme]) .astro-code {
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+/* ── Nivel de lectura: "Explicación simple" / "Detalle técnico" ──
+ * Con JS: manda data-lectura en <html> (guardado en localStorage).
+ * Sin JS: mandan los radios del interruptor (por defecto: simple).
+ */
+.ver-tecnico,
+.solo-tecnico {
+  display: none;
+}
+:root[data-lectura="tecnico"] .ver-simple,
+:root:not([data-js]):has(#lectura-tecnico:checked) .ver-simple,
+:root[data-lectura="tecnico"] .solo-simple,
+:root:not([data-js]):has(#lectura-tecnico:checked) .solo-simple {
+  display: none;
+}
+:root[data-lectura="tecnico"] .ver-tecnico,
+:root:not([data-js]):has(#lectura-tecnico:checked) .ver-tecnico {
+  display: inline;
+}
+:root[data-lectura="tecnico"] .solo-tecnico,
+:root:not([data-js]):has(#lectura-tecnico:checked) .solo-tecnico {
+  display: block;
+}
+/* Sin JS no podemos abrir <details>: lo forzamos con ::details-content donde exista. */
+:root:not([data-js]):has(#lectura-tecnico:checked) details.capa::details-content {
+  content-visibility: visible;
+  block-size: auto;
+}

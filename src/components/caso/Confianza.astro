@@ -1,0 +1,44 @@
+---
+import TextoGlosario from "./TextoGlosario.astro"
+import { motivoConfianzaPorDefecto, textoConfianza } from "@/lib/casos"
+
+interface Props {
+  nivel: "alta" | "media" | "baja"
+  motivo?: string
+}
+const { nivel, motivo = motivoConfianzaPorDefecto[nivel] } = Astro.props
+const llenos = { alta: 3, media: 2, baja: 1 }[nivel]
+---
+
+<div class:list={["confianza flex items-start gap-4", `nivel-${nivel}`]}>
+  <svg class="mt-1 shrink-0" width="42" height="14" viewBox="0 0 42 14" aria-hidden="true">
+    {[0, 1, 2].map((i) => <rect x={i * 15} y="0" width="12" height="14" rx="2" class={i < llenos ? "lleno" : "vacio"} />)}
+  </svg>
+  <p class="medida text-lg leading-snug">
+    <strong class="nivel font-bold">{textoConfianza[nivel]}:</strong>
+    <TextoGlosario texto={motivo} />
+  </p>
+</div>
+
+<style>
+  .nivel-alta {
+    --c: var(--accent);
+  }
+  .nivel-media {
+    --c: var(--nivel-media);
+  }
+  .nivel-baja {
+    --c: var(--nivel-baja);
+  }
+  .lleno {
+    fill: var(--c);
+  }
+  .vacio {
+    fill: none;
+    stroke: var(--rule);
+    stroke-width: 1.5;
+  }
+  .nivel {
+    color: var(--c);
+  }
+</style>

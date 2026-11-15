@@ -1,0 +1,16 @@
+---
+/** Elige GraficoLinea o GraficoBarras según el campo `tipo` del JSON. */
+import GraficoLinea from "./GraficoLinea.astro"
+import GraficoBarras from "./GraficoBarras.astro"
+import { cargarGrafico } from "@/lib/datos"
+
+interface Props {
+  slug: string
+  archivo: string
+  nivel?: 2 | 3
+}
+const { slug, archivo, nivel } = Astro.props
+const d = cargarGrafico(slug, archivo)
+---
+
+{d.tipo === "linea" ? <GraficoLinea datos={d} nivel={nivel} /> : <GraficoBarras datos={d} nivel={nivel} />}

@@ -1,0 +1,153 @@
+---
+/**
+ * Listado de casos con filtros por herramienta y tema.
+ * Los filtros funcionan con CSS (:has) — cero JavaScript.
+ */
+import Layout from "@/layouts/Layout.astro"
+import TarjetaCaso from "@/components/caso/TarjetaCaso.astro"
+import { obtenerCasos } from "@/lib/casos"
+import { HERRAMIENTAS, slugHerramienta } from "@/lib/herramientas"
+
+const casos = await obtenerCasos()
+const temas = [...new Set(casos.map((c) => c.data.tema))].sort((a, b) => a.localeCompare(b, "es"))
+
+const herramientas = HERRAMIENTAS.map((h) => ({
+  nombre: h,
+  slug: slugHerramienta(h),
+  total: casos.filter((c) => c.data.herramientas.includes(h)).length,
+}))
+const temasF = temas.map((t) => ({ nombre: t, slug: slugHerramienta(t) }))
+
+// Reglas CSS generadas a partir de los datos.
+const P = ".pagina-casos"
+const reglas: string[] = []
+for (const h of herramientas) {
+  reglas.push(`${P}:has(#h-${h.slug}:checked) .caso:not([data-herramientas~="${h.slug}"]){display:none}`)
+}
+for (const t of temasF) {
+  reglas.push(`${P}:has(#t-${t.slug}:checked) .caso:not([data-tema="${t.slug}"]){display:none}`)
+}
+// Mensaje "sin resultados" para combinaciones vacías.
+const opcionesH = [{ slug: "todas", h: null as string | null }, ...herramientas.map((h) => ({ slug: h.slug, h: h.nombre }))]
+const opcionesT = [{ slug: "todos", t: null as string | null }, ...temasF.map((t) => ({ slug: t.slug, t: t.nombre }))]
+for (const oh of opcionesH) {
+  for (const ot of opcionesT) {
+    const n = casos.filter(
+      (c) =>
+        (!oh.h || c.data.herramientas.includes(oh.h as (typeof HERRAMIENTAS)[number])) && (!ot.t || c.data.tema === ot.t),
+    ).length
+    if (n === 0) reglas.push(`${P}:has(#h-${oh.slug}:checked):has(#t-${ot.slug}:checked) .sin-resultados{display:block}`)
+  }
+}
+const css = reglas.join("\n")
+---
+
+<Layout
+  title="Casos"
+  description="Análisis con datos públicos de Costa Rica. Cada caso responde una pregunta en una frase, con el método completo para quien quiera profundizar."
+>
+  <div class="pagina-casos contenedor pt-12 sm:pt-20">
+    <header class="max-w-3xl">
+      <h1 class="text-5xl tracking-[-0.025em] sm:text-7xl">Casos</h1>
+      <p class="medida mt-4 text-xl text-ink-2">
+        Una pregunta, una respuesta clara y el método completo para quien quiera revisarlo.
+      </p>
+    </header>
+
+    {
+      casos.length === 0 ? (
+        <div class="mt-14 rounded-md border border-dashed border-rule p-8 sm:p-10">
+          <p class="font-serif text-2xl sm:text-3xl">Todavía no hay casos publicados.</p>
+          <p class="mt-2 text-lg text-ink-2">
+            El primero sale pronto. Mientras tanto, podés <a href="/ruta/" class="text-accent underline">ver mi avance</a>.
+          </p>
+        </div>
+      ) : (
+        <>
+          <form class="filtros mt-12 space-y-5" aria-label="Filtrar casos">
+            <fieldset>
+              <legend class="versalitas mb-2 text-sm text-ink-2">Herramienta</legend>
+              <div class="flex flex-wrap gap-2">
+                <input type="radio" name="h" id="h-todas" class="sr-only" checked />
+                <label for="h-todas" class="chip">Todas</label>
+                {herramientas
+                  .filter((h) => h.total > 0)
+                  .map((h) => (
+                    <>
+                      <input type="radio" name="h" id={`h-${h.slug}`} class="sr-only" />
+                      <label for={`h-${h.slug}`} class="chip">
+                        {h.nombre} <span class="num text-ink-3">{h.total}</span>
+                      </label>
+                    </>
+                  ))}
+              </div>
+            </fieldset>
+            {temasF.length > 1 && (
+              <fieldset>
+                <legend class="versalitas mb-2 text-sm text-ink-2">Tema</legend>
+                <div class="flex flex-wrap gap-2">
+                  <input type="radio" name="t" id="t-todos" class="sr-only" checked />
+                  <label for="t-todos" class="chip">Todos</label>
+                  {temasF.map((t) => (
+                    <>
+                      <input type="radio" name="t" id={`t-${t.slug}`} class="sr-only" />
+                      <label for={`t-${t.slug}`} class="chip">
+                        {t.nombre}
+                      </label>
+                    </>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {temasF.length <= 1 && <input type="radio" name="t" id="t-todos" class="sr-only" checked hidden />}
+          </form>
+
+          <div class="lista mt-10 border-b border-rule">
+            {casos.map((c) => (
+              <TarjetaCaso caso={c} nivel={2} />
+            ))}
+            <p class="sin-resultados hidden border-t border-rule py-10 text-lg text-ink-2" role="status">
+              Ningún caso combina esos filtros todavía. Probá con otra herramienta o tema.
+            </p>
+          </div>
+        </>
+      )
+    }
+  </div>
+  <style is:inline set:html={css} />
+</Layout>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 1rem;
+    color: var(--ink-2);
+    transition:
+      border-color 180ms var(--ease-salida),
+      background 180ms var(--ease-salida);
+  }
+  .chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  input:checked + .chip {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+    font-weight: 650;
+  }
+  input:checked + .chip span {
+    color: inherit;
+    opacity: 0.75;
+  }
+  input:focus-visible + .chip {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>

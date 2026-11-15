@@ -1,0 +1,61 @@
+---
+/**
+ * Tablero económico (fase futura).
+ * Lee src/data/indicadores/latest.json, que un GitHub Action actualizará cada semana
+ * y luego disparará un nuevo build con el deploy hook (ver docs/DESPLIEGUE.md).
+ */
+import Layout from "@/layouts/Layout.astro"
+import Indicador from "@/components/Indicador.astro"
+import { esquemaIndicadores } from "@/lib/datos"
+import { fecha } from "@/lib/formato"
+import crudo from "@/data/indicadores/latest.json"
+
+const datos = esquemaIndicadores.parse(crudo)
+const hayDatos = datos.indicadores.length > 0
+---
+
+<Layout
+  title="Indicadores"
+  description="Tablero semanal con indicadores económicos de Costa Rica, explicados en palabras simples."
+>
+  <div class="contenedor pt-12 sm:pt-20">
+    <header class="max-w-3xl">
+      <h1 class="text-5xl tracking-[-0.025em] sm:text-7xl">Indicadores</h1>
+      <p class="medida mt-4 text-xl text-ink-2">
+        Los números de la economía de Costa Rica que más te tocan el bolsillo, actualizados cada semana.
+      </p>
+      {
+        datos.actualizado && (
+          <p class="mt-4 text-base text-ink-3">
+            Actualizado el <time datetime={datos.actualizado.toISOString()}>{fecha(datos.actualizado)}</time>
+          </p>
+        )
+      }
+    </header>
+
+    {
+      hayDatos ? (
+        <div class="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {datos.indicadores.map((ind) => (
+            <Indicador ind={ind} />
+          ))}
+        </div>
+      ) : (
+        <section class="mt-14 grid gap-10 border-t-2 border-rule-strong pt-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" aria-labelledby="pronto-t">
+          <div>
+            <h2 id="pronto-t" class="text-3xl sm:text-4xl">En construcción</h2>
+            <p class="medida mt-3 text-lg text-ink-2">
+              Este tablero se va a actualizar solo, cada semana, con datos oficiales. Cada número traerá una línea que explica qué significa.
+            </p>
+          </div>
+          <ul class="space-y-3 text-lg">
+            <li class="border-b border-rule pb-3">Tipo de cambio del dólar</li>
+            <li class="border-b border-rule pb-3">Inflación</li>
+            <li class="border-b border-rule pb-3">Tasa básica pasiva</li>
+            <li class="border-b border-rule pb-3 text-ink-2">Y otros, según lo que más se consulte</li>
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</Layout>

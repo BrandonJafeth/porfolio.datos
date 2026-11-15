@@ -1,0 +1,64 @@
+---
+/**
+ * /casos/tema/[tema] — una página por tema, solo si el tema tiene al menos un caso publicado.
+ * (En dev o con MOSTRAR_BORRADORES=true también cuentan los borradores, para probar.)
+ */
+import Layout from "@/layouts/Layout.astro"
+import TarjetaCaso from "@/components/caso/TarjetaCaso.astro"
+import { obtenerCasos, type Caso } from "@/lib/casos"
+import { slugHerramienta } from "@/lib/herramientas"
+import { textoTema } from "@/data/temas"
+import { SITIO } from "@/data/perfil"
+
+export async function getStaticPaths() {
+  const casos = await obtenerCasos()
+  const grupos = new Map<string, { nombre: string; casos: Caso[] }>()
+  for (const c of casos) {
+    const slug = slugHerramienta(c.data.tema)
+    const g = grupos.get(slug) ?? { nombre: c.data.tema, casos: [] }
+    g.casos.push(c)
+    grupos.set(slug, g)
+  }
+  return [...grupos].map(([tema, g]) => ({ params: { tema }, props: g }))
+}
+
+interface Props {
+  nombre: string
+  casos: Caso[]
+}
+const { nombre, casos } = Astro.props
+const tx = textoTema(Astro.params.tema!, nombre)
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: tx.titulo,
+    description: tx.descripcion,
+    inLanguage: "es-CR",
+    url: new URL(Astro.url.pathname, Astro.site ?? SITIO.url).toString(),
+    hasPart: casos.map((c) => ({
+      "@type": "Article",
+      headline: c.data.pregunta,
+      url: new URL(`/casos/${c.id}/`, SITIO.url).toString(),
+    })),
+  },
+]
+---
+
+<Layout title={tx.titulo} description={tx.descripcion} jsonLd={jsonLd} noindex={casos.every((c) => c.data.estado === "borrador")}>
+  <div class="contenedor pt-12 sm:pt-20">
+    <nav aria-label="Ruta de navegación" class="text-base text-ink-2">
+      <a href="/casos/" class="underline decoration-rule hover:text-ink">Casos</a>
+      <span aria-hidden="true" class="mx-1.5 text-ink-3">/</span>
+      <span>{nombre}</span>
+    </nav>
+    <header class="mt-6 max-w-3xl">
+      <h1 class="text-4xl tracking-[-0.025em] sm:text-6xl">{tx.h1}</h1>
+      <p class="medida mt-4 text-xl text-ink-2">{tx.intro}</p>
+    </header>
+    <div class="mt-10 border-b border-rule">
+      {casos.map((c) => <TarjetaCaso caso={c} nivel={2} />)}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,150 @@
+---
+import SunIcon from "./icons/Sun.astro"
+import MoonIcon from "./icons/Moon.astro"
+import SystemIcon from "./icons/System.astro"
+
+const OPCIONES = [
+  { valor: "light", texto: "Claro" },
+  { valor: "dark", texto: "Oscuro" },
+  { valor: "system", texto: "Como el sistema" },
+] as const
+---
+
+<div class="tema relative">
+  <button
+    type="button"
+    id="tema-btn"
+    class="tema-btn grid size-10 place-items-center rounded-full text-ink-2 transition-colors hover:bg-paper-3 hover:text-ink"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="tema-menu"
+  >
+    <span class="sr-only">Cambiar tema de color</span>
+    <SunIcon class="icono icono-light size-5" aria-hidden="true" />
+    <MoonIcon class="icono icono-dark size-5" aria-hidden="true" />
+    <SystemIcon class="icono icono-system size-5" aria-hidden="true" />
+  </button>
+  <ul
+    id="tema-menu"
+    hidden
+    class="absolute right-0 top-12 z-30 min-w-44 rounded-lg border border-rule bg-paper-2 p-1 text-base shadow-papel"
+  >
+    {
+      OPCIONES.map((o) => (
+        <li>
+          <button
+            type="button"
+            data-tema={o.valor}
+            class="tema-opcion flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-ink-2 hover:bg-paper-3 hover:text-ink"
+          >
+            {o.texto}
+            <svg class="marca size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .icono {
+    grid-area: 1 / 1;
+    transition:
+      scale 220ms var(--ease-salida),
+      opacity 220ms var(--ease-salida);
+    scale: 0.4;
+    opacity: 0;
+  }
+  :global(:root[data-tema-pref="light"]) .icono-light,
+  :global(:root[data-tema-pref="dark"]) .icono-dark,
+  :global(:root[data-tema-pref="system"]) .icono-system,
+  :global(:root:not([data-tema-pref])) .icono-system {
+    scale: 1;
+    opacity: 1;
+  }
+  .marca {
+    visibility: hidden;
+    font-size: 0.6rem;
+  }
+  .tema-opcion[aria-pressed="true"] {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .tema-opcion[aria-pressed="true"] .marca {
+    visibility: visible;
+  }
+  /* Sin JS el selector no sirve: se oculta. */
+  :global(html:not([data-theme])) .tema {
+    display: none;
+  }
+</style>
+
+<script>
+  type Pref = "light" | "dark" | "system"
+  const raiz = document.documentElement
+  const media = window.matchMedia("(prefers-color-scheme: dark)")
+  const btn = document.getElementById("tema-btn") as HTMLButtonElement | null
+  const menu = document.getElementById("tema-menu") as HTMLUListElement | null
+  const opciones = Array.from(document.querySelectorAll<HTMLButtonElement>(".tema-opcion"))
+
+  const leer = (): Pref => {
+    try {
+      const v = localStorage.getItem("tema")
+      return v === "light" || v === "dark" ? v : "system"
+    } catch {
+      return "system"
+    }
+  }
+
+  const aplicar = (pref: Pref) => {
+    raiz.dataset.temaPref = pref
+    raiz.dataset.theme = pref === "system" ? (media.matches ? "dark" : "light") : pref
+    opciones.forEach((o) => o.setAttribute("aria-pressed", String(o.dataset.tema === pref)))
+  }
+
+  const abrir = (si: boolean) => {
+    if (!menu || !btn) return
+    menu.hidden = !si
+    btn.setAttribute("aria-expanded", String(si))
+    if (si) (opciones.find((o) => o.getAttribute("aria-pressed") === "true") ?? opciones[0])?.focus()
+  }
+
+  aplicar(leer())
+  media.addEventListener("change", () => leer() === "system" && aplicar("system"))
+
+  btn?.addEventListener("click", (e) => {
+    e.stopPropagation()
+    abrir(Boolean(menu?.hidden))
+  })
+
+  opciones.forEach((o, i) => {
+    o.addEventListener("click", () => {
+      const pref = (o.dataset.tema ?? "system") as Pref
+      try {
+        if (pref === "system") localStorage.removeItem("tema")
+        else localStorage.setItem("tema", pref)
+      } catch {
+        /* almacenamiento bloqueado: igual aplicamos el tema en esta página */
+      }
+      aplicar(pref)
+      abrir(false)
+      btn?.focus()
+    })
+    o.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") opciones[(i + 1) % opciones.length]?.focus()
+      else if (e.key === "ArrowUp") opciones[(i - 1 + opciones.length) % opciones.length]?.focus()
+      else return
+      e.preventDefault()
+    })
+  })
+
+  document.addEventListener("click", (e) => {
+    if (menu && menu.hidden === false && !menu.contains(e.target as Node)) abrir(false)
+  })
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu && menu.hidden === false) {
+      abrir(false)
+      btn?.focus()
+    }
+  })
+</script>

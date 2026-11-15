@@ -1,0 +1,184 @@
+---
+/** Avance público en la ruta de 26 semanas. Fuente: src/data/ruta.json (semanas completadas: a mano). */
+import Layout from "@/layouts/Layout.astro"
+import { ruta, resumenRuta } from "@/lib/ruta"
+import { obtenerCasos, urlCaso } from "@/lib/casos"
+import { fecha } from "@/lib/formato"
+
+const r = resumenRuta()
+const casos = await obtenerCasos()
+const publicados = casos.filter((c) => c.data.estado === "publicado")
+const semanas = Array.from({ length: ruta.totalSemanas }, (_, i) => i + 1)
+const faseDe = (s: number) => ruta.fases.find((f) => s >= f.semanas[0] && s <= f.semanas[1])
+
+type EstadoSemana = "hecha" | "actual" | "colchon" | "atrasada" | "pendiente"
+const estadoSemana = (s: number): EstadoSemana =>
+  r.hechas.has(s) ? "hecha" : r.colchon.has(s) ? "colchon" : s === r.actual ? "actual" : s < r.actual ? "atrasada" : "pendiente"
+
+const textoEstado: Record<EstadoSemana, string> = {
+  hecha: "completada",
+  actual: "en curso",
+  colchon: "colchón",
+  atrasada: "pendiente de cerrar",
+  pendiente: "por venir",
+}
+
+const estadoFase = (f: (typeof ruta.fases)[number]) => {
+  const propias = semanas.filter((s) => s >= f.semanas[0] && s <= f.semanas[1])
+  const n = propias.filter((s) => r.hechas.has(s)).length
+  if (n === propias.length) return { texto: "Completa", clase: "completa" }
+  if (r.actual >= f.semanas[0] && r.actual <= f.semanas[1]) return { texto: `En curso, ${n} de ${propias.length}`, clase: "en-curso" }
+  if (n > 0) return { texto: `${n} de ${propias.length}`, clase: "en-curso" }
+  return { texto: r.actual > f.semanas[1] ? "Por cerrar" : "Por venir", clase: "pendiente" }
+}
+
+const resumen = !r.empezo
+  ? `Empieza el lunes ${fecha(ruta.inicio)}.`
+  : r.termino
+    ? "Ruta terminada."
+    : `Semana ${r.actual} de ${r.total}.`
+---
+
+<Layout
+  title="Ruta de 26 semanas"
+  description="Mi avance público en la ruta de análisis de datos: fases, semanas completadas y casos publicados."
+>
+  <div class="contenedor pt-12 sm:pt-20">
+    <header class="max-w-3xl">
+      <h1 class="text-5xl tracking-[-0.025em] sm:text-7xl">Ruta de {ruta.totalSemanas} semanas</h1>
+      <p class="medida mt-4 text-xl text-ink-2">
+        Del {fecha(ruta.inicio)} al {fecha(ruta.fin ?? new Date(ruta.inicio.getTime() + ruta.totalSemanas * 7 * 86_400_000))}. Cada fase termina en un caso publicado.
+      </p>
+    </header>
+
+    <section class="mt-14 border-t-2 border-rule-strong pt-6" aria-labelledby="avance-t">
+      <h2 id="avance-t" class="text-2xl">{resumen}</h2>
+      <p class="mt-1 text-base text-ink-2">
+        {r.hechas.size} semanas completadas, {publicados.length} {publicados.length === 1 ? "caso publicado" : "casos publicados"}.
+        {r.atrasadas.length > 0 && ` ${r.atrasadas.length} por cerrar.`}
+      </p>
+
+      <ol class="semanas mt-6 grid grid-cols-[repeat(13,minmax(0,1fr))] gap-1.5" aria-label="Semanas de la ruta">
+        {
+          semanas.map((s) => {
+            const e = estadoSemana(s)
+            const f = faseDe(s)
+            return (
+              <li class:list={["semana grid aspect-square place-items-center rounded-[3px] text-xs", e]} title={`Semana ${s}${f ? `: ${f.nombre}` : ""}`}>
+                <span class="sr-only">
+                  Semana {s}, {textoEstado[e]}
+                  {f ? `, ${f.nombre}` : ""}
+                </span>
+                <span aria-hidden="true" class="num">{s}</span>
+              </li>
+            )
+          })
+        }
+      </ol>
+      <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-2" aria-label="Leyenda">
+        <li class="inline-flex items-center gap-1.5"><span class="muestra hecha"></span> Completada</li>
+        <li class="inline-flex items-center gap-1.5"><span class="muestra actual"></span> Esta semana</li>
+        <li class="inline-flex items-center gap-1.5"><span class="muestra colchon"></span> Colchón (fin de año, Semana Santa)</li>
+        <li class="inline-flex items-center gap-1.5"><span class="muestra pendiente"></span> Por venir</li>
+      </ul>
+    </section>
+
+    <section class="mt-20" aria-labelledby="fases-t">
+      <h2 id="fases-t" class="border-t-2 border-rule-strong pt-4 text-3xl sm:text-[2.6rem]">Fases</h2>
+      <ol class="mt-6 divide-y divide-rule">
+        {
+          ruta.fases.map((f) => {
+            const e = estadoFase(f)
+            const delaFase = casos.filter((c) => c.data.fase === f.numero)
+            return (
+              <li class="grid gap-x-10 gap-y-2 py-7 md:grid-cols-[13rem_minmax(0,1fr)]">
+                <div>
+                  <p class="num text-base text-ink-3">
+                    F{f.numero}, {f.semanas[0] === f.semanas[1] ? `semana ${f.semanas[0]}` : `semanas ${f.semanas[0]} a ${f.semanas[1]}`}
+                  </p>
+                  <p class:list={["mt-1 text-base font-bold", `estado-${e.clase}`]}>{e.texto}</p>
+                </div>
+                <div>
+                  <h3 class="text-2xl">{f.nombre}</h3>
+                  {f.objetivo && <p class="medida mt-1 text-lg text-ink-2">{f.objetivo}</p>}
+                  {delaFase.length > 0 ? (
+                    <ul class="mt-2 space-y-1 text-lg">
+                      {delaFase.map((c) => (
+                        <li>
+                          Caso:{" "}
+                          <a href={urlCaso(c)} class="text-accent underline">
+                            {c.data.pregunta}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    f.caso && (
+                      <p class="mt-2 text-lg text-ink-2">
+                        Caso:{" "}
+                        {f.caso.url ? (
+                          <a href={f.caso.url} class="text-accent underline">
+                            {f.caso.titulo}
+                          </a>
+                        ) : (
+                          f.caso.titulo
+                        )}
+                        {f.caso.fuente && <span class="text-ink-3"> ({f.caso.fuente})</span>}
+                      </p>
+                    )
+                  )}
+                </div>
+              </li>
+            )
+          })
+        }
+      </ol>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .semana,
+  .muestra {
+    border: 1px solid var(--rule);
+    color: var(--ink-3);
+  }
+  .muestra {
+    display: inline-block;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 2px;
+  }
+  .hecha {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .actual {
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .colchon {
+    border-style: dashed;
+    background: repeating-linear-gradient(135deg, transparent 0 4px, var(--rule) 4px 5px);
+  }
+  .atrasada {
+    border-color: var(--nivel-media);
+    color: var(--nivel-media);
+  }
+  @media (max-width: 30rem) {
+    .semanas {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+  .estado-completa {
+    color: var(--accent);
+  }
+  .estado-en-curso {
+    color: var(--nivel-media);
+  }
+  .estado-pendiente {
+    color: var(--ink-3);
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import { Image } from "astro:assets"
+import type { ImageMetadata } from "astro"
+import { PERFIL, esPendiente } from "@/data/perfil"
+import LinkedIn from "@/components/icons/LinkedIn.astro"
+import GitHub from "@/components/icons/GitHub.astro"
+import FileText from "@/components/icons/FileText.astro"
+import MapPin from "@/components/icons/MapPin.astro"
+import IndicadorRuta from "./IndicadorRuta.astro"
+import { t } from "@/i18n"
+
+// TODO_FOTO: colocá tu foto como src/assets/foto.jpg (o .png / .webp). Se detecta sola.
+const fotos = import.meta.glob<ImageMetadata>("/src/assets/foto.{jpg,jpeg,png,webp,avif}", {
+  eager: true,
+  import: "default",
+})
+const foto = Object.values(fotos)[0]
+
+const botones = [
+  { texto: "LinkedIn", url: PERFIL.enlaces.linkedin, Icono: LinkedIn, principal: true },
+  { texto: "GitHub", url: PERFIL.enlaces.github, Icono: GitHub, principal: false },
+  { texto: "CV", url: PERFIL.enlaces.cv, Icono: FileText, principal: false },
+]
+const dev = import.meta.env.DEV
+---
+
+<section class="contenedor grid items-center gap-12 pb-16 pt-12 sm:pt-20 md:grid-cols-[minmax(0,1fr)_17rem] md:gap-16 md:pb-24 lg:pt-28" aria-labelledby="hero-t">
+  <div>
+    <h1 id="hero-t" class="text-2xl tracking-[-0.01em] text-ink-2 sm:text-3xl">{t("hero.h1")}</h1>
+    <p class="promesa mt-4 max-w-[17ch] font-serif text-[2.6rem] leading-[1.03] tracking-[-0.03em] text-ink sm:text-6xl lg:text-[4.6rem]">
+      <span class="resaltado trazo">{t("hero.promesa")}</span>
+    </p>
+    <p class="medida mt-6 text-lg text-ink-2 sm:text-xl">{t("hero.apoyo")}</p>
+    <div class="mt-5"><IndicadorRuta /></div>
+
+    <div class="mt-8 flex flex-col gap-1 text-lg text-ink-2">
+      <p class="font-bold text-ink">{PERFIL.nombre}</p>
+      <p>{PERFIL.rol}</p>
+      <p class="inline-flex items-center gap-1.5"><MapPin class="size-5 text-accent" /> {PERFIL.ciudad}, {PERFIL.provincia}</p>
+    </div>
+
+    <ul class="mt-8 flex flex-wrap gap-3">
+      {
+        botones.map(({ texto, url, Icono, principal }) =>
+          !esPendiente(url) ? (
+            <li>
+              <a href={url} rel="noopener" class:list={["boton", principal && "boton-principal"]}>
+                <Icono class="size-5" /> {texto}
+              </a>
+            </li>
+          ) : dev ? (
+            <li>
+              <span class="boton boton-pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
+                <Icono class="size-5" /> {texto} · {url}
+              </span>
+            </li>
+          ) : null,
+        )
+      }
+      <li>
+        <a href="/casos/" class="boton">{t("hero.verCasos")}</a>
+      </li>
+    </ul>
+  </div>
+
+  <figure class="retrato mx-auto w-52 md:w-full">
+    {
+      foto ? (
+        <Image
+          src={foto}
+          alt={`Foto de ${PERFIL.nombre}`}
+          width={544}
+          height={680}
+          widths={[272, 544]}
+          sizes="(min-width: 48rem) 17rem, 13rem"
+          loading="eager"
+          fetchpriority="high"
+          class="aspect-[4/5] w-full rounded-[3px] object-cover"
+        />
+      ) : (
+        <div class="monograma grid aspect-[4/5] w-full place-items-center rounded-[3px]" role="img" aria-label={`Iniciales de ${PERFIL.nombre}`}>
+          <span class="font-serif text-7xl tracking-tight">BC</span>
+        </div>
+      )
+    }
+    <figcaption class="mt-3 border-t border-rule pt-2 text-sm text-ink-3">
+      {PERFIL.ciudad}, {PERFIL.provincia}. Analizo con SQL y Python; publico con Astro.
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.6rem 1.15rem;
+    font-size: 1rem;
+    font-weight: 650;
+    text-decoration: none;
+    color: var(--ink);
+    transition:
+      border-color 200ms var(--ease-salida),
+      background 200ms var(--ease-salida),
+      translate 200ms var(--ease-salida);
+  }
+  .boton:hover {
+    border-color: var(--ink);
+    translate: 0 -1px;
+  }
+  .boton-principal {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  .boton-principal:hover {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+  }
+  .boton-pendiente {
+    border-style: dashed;
+    color: var(--nivel-media);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+  .monograma {
+    background:
+      repeating-linear-gradient(0deg, transparent 0 23px, var(--rule) 23px 24px),
+      var(--paper-2);
+    border: 1px solid var(--rule);
+    color: var(--accent);
+  }
+  .retrato {
+    rotate: 1.2deg;
+    box-shadow: var(--shadow);
+    background: var(--paper-2);
+    padding: 0.6rem 0.6rem 0.75rem;
+  }
+</style>

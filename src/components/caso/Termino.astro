@@ -1,0 +1,96 @@
+---
+/**
+ * Palabra técnica inevitable, con definición accesible.
+ * - Subrayado punteado; al tocar/clic/Enter abre una definición corta (Popover API nativa, sin JS propio).
+ * - Con contenido (slot): en modo "simple" muestra el texto cotidiano y en "técnico" el término.
+ *
+ * Uso en MDX:  <Termino t="mediana" />  ·  <Termino t="volatilidad">qué tanto se mueve</Termino>
+ */
+import { definicion } from "@/data/glosario"
+
+interface Props {
+  /** Término técnico (clave del glosario o texto libre si pasás `def`). */
+  t: string
+  /** Definición propia; si no, se usa la del glosario. */
+  def?: string
+}
+
+const { t, def } = Astro.props
+const texto = def ?? definicion(t)
+if (!texto) {
+  throw new Error(`<Termino t="${t}">: no está en src/data/glosario.ts. Agregalo o pasá def="...".`)
+}
+const id = `def-${t.normalize("NFD").replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}-${Math.random().toString(36).slice(2, 7)}`
+const cotidiano = Astro.slots.has("default") ? (await Astro.slots.render("default")).trim() : null
+---
+
+<button type="button" class="termino" popovertarget={id} aria-describedby={id}>{
+  cotidiano ? (
+    <>
+      <span class="ver-simple" set:html={cotidiano} />
+      <span class="ver-tecnico">{t}</span>
+    </>
+  ) : (
+    t
+  )
+}</button><span id={id} popover="auto" role="tooltip" class="termino-def"><strong>{t[0]!.toUpperCase() + t.slice(1)}:</strong> {texto}</span>
+
+<style>
+  .termino {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: help;
+    text-decoration: underline dotted;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+  }
+  .termino:hover {
+    text-decoration-style: solid;
+  }
+  .termino-def {
+    /* Respaldo universal: hoja fija abajo (cómoda en móvil). */
+    position: fixed;
+    inset: auto 1rem 1rem 1rem;
+    margin: 0 auto;
+    max-width: 30rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--paper-2);
+    color: var(--ink);
+    box-shadow: var(--shadow);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-align: left;
+    text-wrap: pretty;
+  }
+  .termino-def:popover-open {
+    animation: aparece 180ms var(--ease-salida);
+  }
+  /* Navegadores con anclaje CSS: la definición aparece junto a la palabra. */
+  @supports (position-area: top) {
+    @media (min-width: 40rem) {
+      .termino-def {
+        inset: auto;
+        margin: 0.5rem;
+        width: max-content;
+        max-width: min(22rem, calc(100vw - 2rem));
+        position-area: top span-right;
+        position-try-fallbacks: flip-block, flip-inline;
+      }
+    }
+  }
+  @keyframes aparece {
+    from {
+      opacity: 0;
+      translate: 0 4px;
+    }
+  }
+</style>

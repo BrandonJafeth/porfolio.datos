@@ -1,0 +1,16 @@
+{
+  "inicio": "2026-11-16",
+  "fin": "2027-05-16",
+  "totalSemanas": 26,
+  "colchon": [6, 7, 19],
+  "semanasCompletadas": [],
+  "fases": [
+    { "numero": 0, "nombre": "Setup y portafolio base", "semanas": [1, 1] },
+    { "numero": 1, "nombre": "SQL analítico", "semanas": [2, 5], "caso": { "titulo": "Pulso cambiario y de tasas", "fuente": "BCCR" } },
+    { "numero": 2, "nombre": "Python, pandas y visualización", "semanas": [8, 12], "caso": { "titulo": "Empleo e ingresos: Región Chorotega vs. país", "fuente": "INEC" } },
+    { "numero": 3, "nombre": "Estadística aplicada", "semanas": [13, 15], "caso": { "titulo": "Seguridad por cantón en Guanacaste", "fuente": "Poder Judicial" } },
+    { "numero": 4, "nombre": "BI con Power BI", "semanas": [16, 18], "caso": { "titulo": "Tablero de ventas de una librería" } },
+    { "numero": 5, "nombre": "Automatización y pipelines", "semanas": [20, 23], "caso": { "titulo": "Reporte económico semanal automático", "url": "/indicadores/" } },
+    { "numero": 6, "nombre": "Proyecto integrador", "semanas": [24, 26], "caso": { "titulo": "Turismo en Guanacaste" } }
+  ]
+}

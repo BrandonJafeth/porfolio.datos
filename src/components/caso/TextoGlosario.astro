@@ -1,0 +1,37 @@
+---
+/**
+ * Renderiza texto plano del frontmatter con marcas de glosario:
+ *   {{mediana}}                     → término con definición
+ *   {{volatilidad|qué tanto se mueve}} → texto cotidiano en modo simple, término en modo técnico
+ */
+import Termino from "./Termino.astro"
+
+interface Props {
+  texto: string
+}
+
+const { texto } = Astro.props
+type Parte = { tipo: "texto"; v: string } | { tipo: "termino"; t: string; cotidiano?: string }
+
+const partes: Parte[] = []
+const re = /\{\{([^|}]+)(?:\|([^}]+))?\}\}/g
+let ultimo = 0
+for (const m of texto.matchAll(re)) {
+  if (m.index > ultimo) partes.push({ tipo: "texto", v: texto.slice(ultimo, m.index) })
+  partes.push({ tipo: "termino", t: m[1]!.trim(), cotidiano: m[2]?.trim() })
+  ultimo = m.index + m[0].length
+}
+if (ultimo < texto.length) partes.push({ tipo: "texto", v: texto.slice(ultimo) })
+---
+
+{
+  partes.map((p) =>
+    p.tipo === "texto" ? (
+      p.v
+    ) : p.cotidiano ? (
+      <Termino t={p.t}>{p.cotidiano}</Termino>
+    ) : (
+      <Termino t={p.t} />
+    ),
+  )
+}

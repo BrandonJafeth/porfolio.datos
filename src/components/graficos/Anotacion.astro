@@ -1,0 +1,20 @@
+---
+/**
+ * Nota al margen para acompañar un gráfico o un párrafo en MDX.
+ * Una línea fina conecta la nota con su contexto; el texto va directo, sin leyendas.
+ *
+ * Uso: <Anotacion titulo="Diciembre 2024">El aguinaldo aumenta la demanda de dólares.</Anotacion>
+ */
+interface Props {
+  titulo?: string
+}
+const { titulo } = Astro.props
+---
+
+<aside class="anotacion relative my-6 max-w-md pl-6 text-base text-ink-2">
+  <svg class="absolute left-0 top-1.5 size-4 text-accent" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M1 1v9a4 4 0 0 0 4 4h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+  </svg>
+  {titulo && <p class="font-bold text-ink">{titulo}</p>}
+  <div><slot /></div>
+</aside>
