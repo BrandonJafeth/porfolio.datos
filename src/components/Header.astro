@@ -1,36 +1,33 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro"
 import { PERFIL } from "@/data/perfil"
+import { t } from "@/i18n"
 
 const nav = [
-  { titulo: "Casos", url: "/casos/" },
-  { titulo: "Indicadores", url: "/indicadores/" },
-  { titulo: "Ruta", url: "/ruta/" },
-  { titulo: "Sobre mí", url: "/#sobre-mi" },
+  { titulo: t("nav.casos"), url: "/casos/" },
+  { titulo: t("nav.indicadores"), url: "/indicadores/" },
+  { titulo: t("nav.ruta"), url: "/ruta/" },
+  { titulo: t("nav.sobreMi"), url: "/#sobre-mi" },
 ]
 
 const actual = Astro.url.pathname
 const activo = (url: string) => !url.includes("#") && actual.startsWith(url)
 ---
 
-<header class="border-b border-rule">
-  <div class="contenedor flex flex-wrap items-center gap-x-6 gap-y-1 py-3 sm:flex-nowrap sm:py-4">
-    <a href="/" class="marca group mr-auto flex items-baseline gap-2 no-underline">
-      <span class="font-serif text-xl font-semibold tracking-tight sm:text-2xl">{PERFIL.nombreCorto}</span>
-      <span class="versalitas text-sm text-accent">datos</span>
+<header class="cabecera">
+  <div class="contenedor flex flex-wrap items-center gap-x-6 sm:flex-nowrap">
+    <a href="/" class="mr-auto flex items-baseline gap-2 py-4 no-underline">
+      <span class="nombre">{PERFIL.nombreCorto}</span>
+      <span class="sub">datos</span>
     </a>
 
     <div class="order-last -mx-1 w-full overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">
-      <nav aria-label="Principal">
-        <ul class="flex gap-1 whitespace-nowrap [&>li]:shrink-0">
+      <nav aria-label={t("nav.principal")}>
+        <ul class="flex whitespace-nowrap [&>li]:shrink-0">
           {
             nav.map((l) => (
               <li>
-                <a
-                  href={l.url}
-                  aria-current={activo(l.url) ? "page" : undefined}
-                  class="enlace inline-block rounded-md px-2.5 py-2 text-base text-ink-2 no-underline transition-colors hover:text-ink"
-                >
+                <a href={l.url} aria-current={activo(l.url) ? "page" : undefined} class="enlace">
                   {l.titulo}
                 </a>
               </li>
@@ -45,26 +42,39 @@ const activo = (url: string) => !url.includes("#") && actual.startsWith(url)
 </header>
 
 <style>
+  .cabecera {
+    border-bottom: 2px solid var(--forma);
+  }
+  .nombre {
+    font-family: var(--font-titulo);
+    font-stretch: 125%;
+    font-weight: 820;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+    color: var(--tinta);
+  }
+  .sub {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--forma-t);
+  }
   .enlace {
-    position: relative;
+    display: inline-block;
+    padding: 0.85rem 0.7rem;
+    font-size: 1rem;
+    color: var(--tinta-2);
+    text-decoration: none;
+    transition:
+      color 160ms var(--ease-salida),
+      box-shadow 160ms var(--ease-salida);
   }
-  .enlace::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0.625rem;
-    bottom: 0.3rem;
-    height: 2px;
-    background: var(--accent);
-    scale: 0 1;
-    transform-origin: left;
-    transition: scale 260ms var(--ease-salida);
-  }
-  .enlace:hover::after,
-  .enlace[aria-current="page"]::after {
-    scale: 1 1;
+  .enlace:hover {
+    color: var(--tinta);
+    box-shadow: inset 0 -2px 0 var(--forma-fuerte);
   }
   .enlace[aria-current="page"] {
-    color: var(--ink);
-    font-weight: 650;
+    color: var(--tinta);
+    font-weight: 700;
+    box-shadow: inset 0 -3px 0 var(--pluma);
   }
 </style>

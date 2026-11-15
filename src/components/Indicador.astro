@@ -1,5 +1,5 @@
 ---
-/** Tarjeta de un indicador económico (lee un item de src/data/indicadores/latest.json). */
+/** Un indicador económico como campo del formulario (lee un item de src/data/indicadores/latest.json). */
 import type { Indicadores } from "@/lib/datos"
 import { formatear } from "@/lib/formato"
 import { sparkline } from "@/lib/graficos"
@@ -17,34 +17,37 @@ const textoCambio =
   cambio === undefined ? null : `${cambio > 0 ? "Subió" : cambio < 0 ? "Bajó" : "Sin cambio"} ${cambio !== 0 ? formatear(Math.abs(cambio), ind.cambioFormato ?? ind.formato) : ""}`.trim()
 ---
 
-<article class="indicador flex flex-col gap-3 border-t-2 border-rule-strong pt-4" aria-labelledby={`ind-${ind.id}`}>
-  <h2 id={`ind-${ind.id}`} class="font-sans text-base font-bold text-ink">{ind.nombre}</h2>
-  <p class="num font-serif text-5xl leading-none text-ink">{formatear(ind.valor, ind.formato)}</p>
+<article class="indicador flex flex-col gap-2 p-4" aria-labelledby={`ind-${ind.id}`}>
+  <h2 id={`ind-${ind.id}`} class="etiqueta">{ind.nombre}</h2>
+  <p class="num text-5xl font-extrabold leading-none text-pluma">{formatear(ind.valor, ind.formato)}</p>
   <div class="flex items-center justify-between gap-3">
     {textoCambio && <p class:list={["text-base font-bold", `tono-${tono}`]}>{textoCambio}</p>}
     {
       spark && (
-        <svg width={spark.ancho} height={spark.alto} viewBox={`-2 -2 ${spark.ancho + 4} ${spark.alto + 4}`} class="text-accent" aria-hidden="true">
+        <svg width={spark.ancho} height={spark.alto} viewBox={`-2 -2 ${spark.ancho + 4} ${spark.alto + 4}`} class="text-pluma" aria-hidden="true">
           <path d={spark.d} fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-          <circle cx={spark.ultimo[0]} cy={spark.ultimo[1]} r="3" fill="currentColor" />
+          <rect x={spark.ultimo[0] - 3} y={spark.ultimo[1] - 3} width="6" height="6" fill="currentColor" />
         </svg>
       )
     }
   </div>
-  <p class="text-base text-ink-2">{ind.explicacion}</p>
-  <p class="text-sm text-ink-3">
-    {ind.periodo} · <a href={ind.fuente.url} rel="noopener" class="underline">{ind.fuente.nombre}</a>
+  <p class="text-base text-tinta-2">{ind.explicacion}</p>
+  <p class="text-sm text-tinta-3">
+    {ind.periodo}. Fuente: <a href={ind.fuente.url} rel="noopener" class="underline">{ind.fuente.nombre}</a>
   </p>
 </article>
 
 <style>
+  .indicador {
+    border: 2px solid var(--forma);
+  }
   .tono-bueno {
-    color: var(--accent);
+    color: var(--pluma);
   }
   .tono-malo {
     color: var(--nivel-baja);
   }
   .tono-neutro {
-    color: var(--ink-2);
+    color: var(--tinta-2);
   }
 </style>

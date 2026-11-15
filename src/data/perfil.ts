@@ -4,7 +4,7 @@
  */
 export const SITIO = {
   url: "https://datos.brandoncarrillo.dev",
-  nombre: "Brandon Carrillo · Datos",
+  nombre: "Brandon Carrillo, datos",
   /** <title> del inicio. */
   tituloInicio: "Brandon Carrillo · Analista de datos en Costa Rica | SQL, Python, Power BI",
   /** Meta description del inicio (≤ 155 caracteres). */
@@ -16,7 +16,7 @@ export const SITIO = {
 export const PERFIL = {
   nombre: "Brandon Carrillo Álvarez",
   nombreCorto: "Brandon Carrillo",
-  rol: "Analista de datos · Full Stack Developer",
+  rol: "Analista de datos y Full Stack Developer",
   /** Cargo para SEO / JSON-LD. */
   cargo: "Analista de datos",
   lugar: "Nicoya, Guanacaste, Costa Rica",

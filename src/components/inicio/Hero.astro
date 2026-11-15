@@ -1,11 +1,14 @@
 ---
+/**
+ * Hero como boleta llenada: cada dato es un campo del formulario.
+ * La promesa es la "respuesta escrita" en azul de bolígrafo.
+ */
 import { Image } from "astro:assets"
 import type { ImageMetadata } from "astro"
 import { PERFIL, esPendiente } from "@/data/perfil"
 import LinkedIn from "@/components/icons/LinkedIn.astro"
 import GitHub from "@/components/icons/GitHub.astro"
 import FileText from "@/components/icons/FileText.astro"
-import MapPin from "@/components/icons/MapPin.astro"
 import IndicadorRuta from "./IndicadorRuta.astro"
 import { t } from "@/i18n"
 
@@ -17,125 +20,199 @@ const fotos = import.meta.glob<ImageMetadata>("/src/assets/foto.{jpg,jpeg,png,we
 const foto = Object.values(fotos)[0]
 
 const botones = [
-  { texto: "LinkedIn", url: PERFIL.enlaces.linkedin, Icono: LinkedIn, principal: true },
-  { texto: "GitHub", url: PERFIL.enlaces.github, Icono: GitHub, principal: false },
-  { texto: "CV", url: PERFIL.enlaces.cv, Icono: FileText, principal: false },
+  { texto: "LinkedIn", url: PERFIL.enlaces.linkedin, Icono: LinkedIn, lleno: true },
+  { texto: "GitHub", url: PERFIL.enlaces.github, Icono: GitHub, lleno: false },
+  { texto: "CV", url: PERFIL.enlaces.cv, Icono: FileText, lleno: false },
 ]
 const dev = import.meta.env.DEV
 ---
 
-<section class="contenedor grid items-center gap-12 pb-16 pt-12 sm:pt-20 md:grid-cols-[minmax(0,1fr)_17rem] md:gap-16 md:pb-24 lg:pt-28" aria-labelledby="hero-t">
-  <div>
-    <h1 id="hero-t" class="text-2xl tracking-[-0.01em] text-ink-2 sm:text-3xl">{t("hero.h1")}</h1>
-    <p class="promesa mt-4 max-w-[17ch] font-serif text-[2.6rem] leading-[1.03] tracking-[-0.03em] text-ink sm:text-6xl lg:text-[4.6rem]">
-      <span class="resaltado trazo">{t("hero.promesa")}</span>
-    </p>
-    <p class="medida mt-6 text-lg text-ink-2 sm:text-xl">{t("hero.apoyo")}</p>
-    <div class="mt-5"><IndicadorRuta /></div>
-
-    <div class="mt-8 flex flex-col gap-1 text-lg text-ink-2">
-      <p class="font-bold text-ink">{PERFIL.nombre}</p>
-      <p>{PERFIL.rol}</p>
-      <p class="inline-flex items-center gap-1.5"><MapPin class="size-5 text-accent" /> {PERFIL.ciudad}, {PERFIL.provincia}</p>
+<section class="contenedor pt-8 sm:pt-12" aria-labelledby="hero-t">
+  <div class="boleta">
+    <div class="campo-f c-ocupacion">
+      <span class="etiqueta">Ocupación</span>
+      <h1 id="hero-t" class="ocupacion">{t("hero.h1")}</h1>
     </div>
-
-    <ul class="mt-8 flex flex-wrap gap-3">
+    <div class="campo-f c-lugar">
+      <span class="etiqueta">Lugar</span>
+      <p class="lugar">{PERFIL.ciudad}, {PERFIL.provincia}</p>
+    </div>
+    <div class="campo-f c-promesa">
+      <span class="etiqueta">¿Qué hace?</span>
+      <p class="promesa escribir">{t("hero.promesa")}</p>
+    </div>
+    <div class="campo-f c-foto">
+      <span class="etiqueta">Fotografía</span>
       {
-        botones.map(({ texto, url, Icono, principal }) =>
-          !esPendiente(url) ? (
-            <li>
-              <a href={url} rel="noopener" class:list={["boton", principal && "boton-principal"]}>
-                <Icono class="size-5" /> {texto}
-              </a>
-            </li>
-          ) : dev ? (
-            <li>
-              <span class="boton boton-pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
-                <Icono class="size-5" /> {texto} · {url}
-              </span>
-            </li>
-          ) : null,
+        foto ? (
+          <Image
+            src={foto}
+            alt={`Foto de ${PERFIL.nombre}`}
+            width={480}
+            height={600}
+            widths={[240, 480]}
+            sizes="(min-width: 64rem) 15rem, 40vw"
+            loading="eager"
+            fetchpriority="high"
+            class="foto"
+          />
+        ) : (
+          <div class="foto foto-vacia" role="img" aria-label={`Iniciales de ${PERFIL.nombre}`}>
+            <span>BC</span>
+          </div>
         )
       }
-      <li>
-        <a href="/casos/" class="boton">{t("hero.verCasos")}</a>
-      </li>
-    </ul>
+    </div>
+    <div class="campo-f c-temas">
+      <span class="etiqueta">Herramientas y temas</span>
+      <p class="medida text-lg text-tinta-2">{t("hero.apoyo")}</p>
+    </div>
+    <div class="campo-f c-ruta">
+      <span class="etiqueta">Ruta de datos</span>
+      <IndicadorRuta />
+    </div>
   </div>
 
-  <figure class="retrato mx-auto w-52 md:w-full">
+  <ul class="mt-5 flex flex-wrap gap-3">
     {
-      foto ? (
-        <Image
-          src={foto}
-          alt={`Foto de ${PERFIL.nombre}`}
-          width={544}
-          height={680}
-          widths={[272, 544]}
-          sizes="(min-width: 48rem) 17rem, 13rem"
-          loading="eager"
-          fetchpriority="high"
-          class="aspect-[4/5] w-full rounded-[3px] object-cover"
-        />
-      ) : (
-        <div class="monograma grid aspect-[4/5] w-full place-items-center rounded-[3px]" role="img" aria-label={`Iniciales de ${PERFIL.nombre}`}>
-          <span class="font-serif text-7xl tracking-tight">BC</span>
-        </div>
+      botones.map(({ texto, url, Icono, lleno }) =>
+        !esPendiente(url) ? (
+          <li>
+            <a href={url} rel="noopener" class:list={["boton", lleno && "boton-lleno"]}>
+              <Icono class="size-5" /> {texto}
+            </a>
+          </li>
+        ) : dev ? (
+          <li>
+            <span class="boton pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
+              <Icono class="size-5" /> {texto}: {url}
+            </span>
+          </li>
+        ) : null,
       )
     }
-    <figcaption class="mt-3 border-t border-rule pt-2 text-sm text-ink-3">
-      {PERFIL.ciudad}, {PERFIL.provincia}. Analizo con SQL y Python; publico con Astro.
-    </figcaption>
-  </figure>
+    <li>
+      <a href="/casos/" class="boton">{t("hero.verCasos")}</a>
+    </li>
+  </ul>
 </section>
 
 <style>
-  .boton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 0.6rem 1.15rem;
-    font-size: 1rem;
-    font-weight: 650;
-    text-decoration: none;
-    color: var(--ink);
-    transition:
-      border-color 200ms var(--ease-salida),
-      background 200ms var(--ease-salida),
-      translate 200ms var(--ease-salida);
+  .boleta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border: 2px solid var(--forma);
+    background: var(--papel);
   }
-  .boton:hover {
-    border-color: var(--ink);
-    translate: 0 -1px;
+  .campo-f {
+    padding: 0.85rem 1rem 1rem;
+    border-bottom: 1px solid var(--forma);
+    min-width: 0;
   }
-  .boton-principal {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+  .campo-f .etiqueta {
+    margin-bottom: 0.35rem;
   }
-  .boton-principal:hover {
-    background: var(--accent-strong);
-    border-color: var(--accent-strong);
+  .ocupacion {
+    font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2.1rem);
   }
-  .boton-pendiente {
+  .lugar {
+    font-family: var(--font-titulo);
+    font-stretch: 112%;
+    font-weight: 720;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+  .promesa {
+    font-family: var(--font-titulo);
+    font-stretch: 100%;
+    font-weight: 760;
+    font-size: clamp(2.5rem, 1.4rem + 4.6vw, 4.6rem);
+    line-height: 1;
+    letter-spacing: -0.032em;
+    color: var(--pluma);
+    max-width: 15ch;
+    text-wrap: balance;
+    padding-block: 0.5rem 0.4rem;
+  }
+  .foto {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--forma);
+  }
+  .foto-vacia {
+    display: grid;
+    place-items: center;
+    background: var(--forma-f);
+    color: var(--forma-t);
+    font-family: var(--font-titulo);
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 2.6rem;
+  }
+  .c-foto {
+    display: none;
+  }
+  .c-ruta {
+    border-bottom: 0;
+  }
+  .pendiente {
     border-style: dashed;
     color: var(--nivel-media);
+    border-color: var(--nivel-media);
+    font-size: 0.85rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
   }
-  .monograma {
-    background:
-      repeating-linear-gradient(0deg, transparent 0 23px, var(--rule) 23px 24px),
-      var(--paper-2);
-    border: 1px solid var(--rule);
-    color: var(--accent);
+  @media (min-width: 48rem) {
+    .boleta {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+    .campo-f {
+      border-right: 1px solid var(--forma);
+    }
+    .c-lugar,
+    .c-ruta {
+      border-right: 0;
+    }
+    .c-promesa {
+      grid-column: 1 / -1;
+      border-right: 0;
+      padding-block: 1.4rem 1.6rem;
+    }
+    .c-temas {
+      border-bottom: 0;
+    }
   }
-  .retrato {
-    rotate: 1.2deg;
-    box-shadow: var(--shadow);
-    background: var(--paper-2);
-    padding: 0.6rem 0.6rem 0.75rem;
+  @media (min-width: 64rem) {
+    .boleta {
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) 15rem;
+    }
+    .c-ocupacion {
+      grid-column: 1;
+    }
+    .c-lugar {
+      grid-column: 2;
+      border-right: 1px solid var(--forma);
+    }
+    .c-foto {
+      display: block;
+      grid-column: 3;
+      grid-row: 1 / span 3;
+      border-right: 0;
+      border-bottom: 0;
+    }
+    .c-promesa {
+      grid-column: 1 / span 2;
+      border-right: 1px solid var(--forma);
+    }
+    .c-temas {
+      grid-column: 1;
+    }
+    .c-ruta {
+      grid-column: 2;
+      border-right: 1px solid var(--forma);
+    }
   }
 </style>

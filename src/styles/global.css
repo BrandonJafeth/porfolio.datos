@@ -1,114 +1,136 @@
 @import "tailwindcss";
-@import "@fontsource-variable/newsreader/opsz.css";
-@import "@fontsource-variable/newsreader/opsz-italic.css";
-@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
+@import "@fontsource-variable/archivo/standard.css";
+@import "@fontsource-variable/public-sans";
 
 /*
- * Boletín cívico — tokens.
- * Papel cálido, tinta oscura, UN acento (verde-azulado) y gris para todo lo demás.
- * Contrastes verificados (WCAG AA) contra --paper en ambos modos.
+ * Archivo y Public Sans no traen el signo de colón (₡).
+ * "Colon CR" lo toma de Noto Sans solo para ese carácter (unicode-range),
+ * así se ve igual en todos los sistemas.
+ */
+@font-face {
+  font-family: "Colon CR";
+  src: url("@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+20A1;
+}
+
+/*
+ * BOLETA — el sitio es un formulario ya llenado.
+ * - Estructura impresa en "tinta de formulario" (salmón): líneas, campos, etiquetas.
+ * - Respuestas escritas en "azul de bolígrafo" (pluma): el ÚNICO color de respuesta.
+ * - Todo encaja en campos; las cifras van en Archivo tabular (cero sin cruzar).
+ * Contrastes verificados (WCAG AA) contra --papel en ambos modos.
  */
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   color-scheme: light;
-  --paper: #f5f1e8;
-  --paper-2: #fbf9f4;
-  --paper-3: #ece6d9;
-  --ink: #1b1e22;
-  --ink-2: #4b5057;
-  --ink-3: #62666c;
-  --rule: #d6cdbc;
-  --rule-strong: #1b1e22;
-  --accent: #0d6a65;
-  --accent-strong: #08524e;
-  --accent-ink: #ffffff;
-  --accent-wash: #c9e4de;
-  --chart-muted: #a49d8e;
-  --chart-grid: #e2dbcc;
-  --chart-accent: #0d6a65;
-  --chart-alt: #b0520b;
-  --nivel-media: #845400;
-  --nivel-baja: #a1361b;
-  --shadow: 0 1px 2px rgb(27 30 34 / 0.06), 0 8px 24px -12px rgb(27 30 34 / 0.18);
+  --papel: #fcfcfa;
+  --papel-2: #ffffff;
+  --tinta: #14161a;
+  --tinta-2: #464b53;
+  --tinta-3: #5d626a;
+  /* Tinta de formulario */
+  --forma: #eba591; /* líneas decorativas de campos */
+  --forma-fuerte: #c0614a; /* bordes de controles (≥ 3:1) */
+  --forma-t: #a3412a; /* etiquetas de campo (texto, ≥ 4.5:1) */
+  --forma-f: #fcece6; /* relleno de campo */
+  /* Bolígrafo */
+  --pluma: #1c3fc4;
+  --pluma-fuerte: #142f99;
+  --pluma-f: #e9eefc;
+  --pluma-ink: #ffffff;
+  /* Estados */
+  --nivel-media: #8a5600;
+  --nivel-baja: #b3261e;
+  /* Gráficos (paleta categórica segura para daltonismo) */
+  --chart-accent: var(--pluma);
+  --chart-muted: #9ea3ab;
+  --chart-grid: #f6d6cc;
+  --chart-2: #c25e00;
+  --chart-3: #5d626a;
+  --chart-4: #a1286a;
+  --sombra: 0 2px 4px rgb(20 22 26 / 0.06), 0 12px 28px -14px rgb(20 22 26 / 0.28);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #141618;
-  --paper-2: #1b1e21;
-  --paper-3: #23272b;
-  --ink: #ede8de;
-  --ink-2: #b6b0a5;
-  --ink-3: #9c978d;
-  --rule: #33383d;
-  --rule-strong: #ede8de;
-  --accent: #5fc7bb;
-  --accent-strong: #8adbd1;
-  --accent-ink: #0a1f1d;
-  --accent-wash: rgb(95 199 187 / 0.22);
-  --chart-muted: #5d6267;
-  --chart-grid: #2a2e32;
-  --chart-accent: #5fc7bb;
-  --chart-alt: #f0a35e;
-  --nivel-media: #e3b24c;
-  --nivel-baja: #f28c70;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  --papel: #111317;
+  --papel-2: #171a1f;
+  --tinta: #eceef1;
+  --tinta-2: #b6bac1;
+  --tinta-3: #9da1a9;
+  --forma: #5b3429;
+  --forma-fuerte: #b5705c;
+  --forma-t: #f2ab94;
+  --forma-f: #1e1714;
+  --pluma: #93a9ff;
+  --pluma-fuerte: #b7c6ff;
+  --pluma-f: #1a2142;
+  --pluma-ink: #0b1020;
+  --nivel-media: #e8b04d;
+  --nivel-baja: #ff8a80;
+  --chart-muted: #60656d;
+  --chart-grid: #3a2620;
+  --chart-2: #f2a24b;
+  --chart-3: #a6aab2;
+  --chart-4: #f08bc1;
+  --sombra: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 32px -14px rgb(0 0 0 / 0.75);
 }
 
 /* Sin JavaScript: seguir la preferencia del sistema. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --paper: #141618;
-    --paper-2: #1b1e21;
-    --paper-3: #23272b;
-    --ink: #ede8de;
-    --ink-2: #b6b0a5;
-    --ink-3: #9c978d;
-    --rule: #33383d;
-    --rule-strong: #ede8de;
-    --accent: #5fc7bb;
-    --accent-strong: #8adbd1;
-    --accent-ink: #0a1f1d;
-    --accent-wash: rgb(95 199 187 / 0.22);
-    --chart-muted: #5d6267;
-    --chart-grid: #2a2e32;
-    --chart-accent: #5fc7bb;
-    --chart-alt: #f0a35e;
-    --nivel-media: #e3b24c;
-    --nivel-baja: #f28c70;
-    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+    --papel: #111317;
+    --papel-2: #171a1f;
+    --tinta: #eceef1;
+    --tinta-2: #b6bac1;
+    --tinta-3: #9da1a9;
+    --forma: #5b3429;
+    --forma-fuerte: #b5705c;
+    --forma-t: #f2ab94;
+    --forma-f: #1e1714;
+    --pluma: #93a9ff;
+    --pluma-fuerte: #b7c6ff;
+    --pluma-f: #1a2142;
+    --pluma-ink: #0b1020;
+    --nivel-media: #e8b04d;
+    --nivel-baja: #ff8a80;
+    --chart-muted: #60656d;
+    --chart-grid: #3a2620;
+    --chart-2: #f2a24b;
+    --chart-3: #a6aab2;
+    --chart-4: #f08bc1;
+    --sombra: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 32px -14px rgb(0 0 0 / 0.75);
   }
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-paper-2: var(--paper-2);
-  --color-paper-3: var(--paper-3);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-rule: var(--rule);
-  --color-rule-strong: var(--rule-strong);
-  --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
-  --color-accent-ink: var(--accent-ink);
-  --color-accent-wash: var(--accent-wash);
+  --color-papel: var(--papel);
+  --color-papel-2: var(--papel-2);
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-tinta-3: var(--tinta-3);
+  --color-forma: var(--forma);
+  --color-forma-fuerte: var(--forma-fuerte);
+  --color-forma-t: var(--forma-t);
+  --color-forma-f: var(--forma-f);
+  --color-pluma: var(--pluma);
+  --color-pluma-fuerte: var(--pluma-fuerte);
+  --color-pluma-f: var(--pluma-f);
+  --color-pluma-ink: var(--pluma-ink);
   --color-nivel-media: var(--nivel-media);
   --color-nivel-baja: var(--nivel-baja);
 
-  --font-serif: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
-  --font-sans: "Atkinson Hyperlegible Next Variable", "Segoe UI", system-ui, sans-serif;
+  --font-titulo: "Archivo Variable", "Archivo", "Colon CR", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "Public Sans Variable", "Public Sans", "Colon CR", "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
 
-  --text-base: 1.125rem;
-  --text-base--line-height: 1.65;
-  --text-lg: 1.25rem;
-  --text-lg--line-height: 1.6;
-
-  --shadow-papel: var(--shadow);
+  --radius-campo: 2px;
+  --shadow-flotante: var(--sombra);
   --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -116,22 +138,21 @@
 
 @layer base {
   html {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--papel);
+    color: var(--tinta);
     font-family: var(--font-sans);
-    font-size: 100%;
     -webkit-text-size-adjust: 100%;
-    text-rendering: optimizeLegibility;
-    scrollbar-color: var(--rule) transparent;
+    scrollbar-color: var(--forma-fuerte) var(--papel);
     scroll-padding-top: 1.5rem;
   }
 
   body {
     font-size: 1.125rem;
-    line-height: 1.65;
+    line-height: 1.6;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+    font-variant-numeric: lining-nums;
   }
 
   @media (min-width: 48rem) {
@@ -143,12 +164,12 @@
   h1,
   h2,
   h3 {
-    font-family: var(--font-serif);
-    font-optical-sizing: auto;
+    font-family: var(--font-titulo);
+    font-stretch: 112%;
+    font-weight: 780;
     text-wrap: balance;
-    letter-spacing: -0.015em;
-    line-height: 1.1;
-    font-weight: 560;
+    letter-spacing: -0.018em;
+    line-height: 1.06;
   }
 
   p,
@@ -158,18 +179,17 @@
   }
 
   ::selection {
-    background: var(--accent);
-    color: var(--accent-ink);
+    background: var(--pluma);
+    color: var(--pluma-ink);
   }
 
   :focus-visible {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--pluma);
     outline-offset: 3px;
-    border-radius: 2px;
   }
 
   a {
-    text-underline-offset: 0.2em;
+    text-underline-offset: 0.22em;
     text-decoration-thickness: 1px;
   }
 
@@ -179,17 +199,15 @@
 
   input,
   textarea {
-    caret-color: var(--accent);
-  }
-
-  hr {
-    border-color: var(--rule);
+    caret-color: var(--pluma);
   }
 }
 
 /* ── Utilidades del sistema ──────────────────────────── */
 
+/* Cifras: Archivo tabular. Archivo no cruza el cero. */
 @utility num {
+  font-family: var(--font-titulo);
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
@@ -200,7 +218,7 @@
 
 @utility contenedor {
   width: 100%;
-  max-width: 72rem;
+  max-width: 74rem;
   margin-inline: auto;
   padding-inline: 1rem;
   @media (min-width: 40rem) {
@@ -211,24 +229,77 @@
   }
 }
 
-@utility versalitas {
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.06em;
+/* Etiqueta de campo de formulario (no es un "eyebrow": nombra el campo que contiene). */
+@utility etiqueta {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.3;
   font-weight: 650;
+  letter-spacing: 0;
+  color: var(--forma-t);
 }
 
-/* Subrayado tipo resaltador: la firma visual del sitio. */
-@utility resaltado {
-  background-image: linear-gradient(var(--accent-wash), var(--accent-wash));
-  background-repeat: no-repeat;
-  background-size: 100% 0.55em;
-  background-position: 0 88%;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  padding-inline: 0.08em;
+/* Campo: caja con borde de formulario. */
+@utility campo {
+  border: 1.5px solid var(--forma);
+  background: var(--papel);
 }
 
-/* ── Movimiento ───────────────────────────────────────── */
+/* Botón cuadrado de formulario. */
+@utility boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.1rem;
+  border: 2px solid var(--tinta);
+  color: var(--tinta);
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 160ms var(--ease-salida),
+    color 160ms var(--ease-salida);
+  &:hover {
+    background: var(--tinta);
+    color: var(--papel);
+  }
+}
+
+@utility boton-lleno {
+  background: var(--tinta);
+  color: var(--papel);
+  &:hover {
+    background: var(--pluma);
+    border-color: var(--pluma);
+    color: var(--pluma-ink);
+  }
+}
+
+/* Casillas de dígitos (como un campo numérico de boleta). */
+@utility casillas {
+  display: inline-flex;
+  border: 1.5px solid var(--forma-fuerte);
+  & > span {
+    display: grid;
+    place-items: center;
+    min-width: 1.75rem;
+    height: 2.1rem;
+    padding-inline: 0.2rem;
+    border-right: 1px solid var(--forma);
+    font-family: var(--font-titulo);
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    color: var(--pluma);
+  }
+  & > span:last-child {
+    border-right: 0;
+  }
+}
+
+/* ── Movimiento: la respuesta "se escribe" ─────────────── */
 
 @view-transition {
   navigation: auto;
@@ -236,26 +307,26 @@
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 260ms;
+  animation-duration: 220ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::view-transition-group(*) {
-  animation-duration: 380ms;
+  animation-duration: 360ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes trazo {
+@keyframes escribir {
   from {
-    background-size: 0% 0.55em;
+    clip-path: inset(0 100% 0 0);
   }
   to {
-    background-size: 100% 0.55em;
+    clip-path: inset(0 0 0 0);
   }
 }
 
-.trazo {
-  animation: trazo 900ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+.escribir {
+  animation: escribir 820ms cubic-bezier(0.3, 0.7, 0.2, 1) 160ms both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -267,7 +338,7 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .trazo {
+  .escribir {
     animation: none;
   }
   ::view-transition-group(*),
@@ -286,11 +357,11 @@
   margin-top: 1em;
 }
 .prosa h2 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-top: 2.25rem;
 }
 .prosa h3 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   margin-top: 1.75rem;
 }
 .prosa h2 + *,
@@ -298,7 +369,7 @@
   margin-top: 0.6rem;
 }
 .prosa a {
-  color: var(--accent);
+  color: var(--pluma);
   text-decoration: underline;
 }
 .prosa ul,
@@ -306,7 +377,7 @@
   padding-left: 1.25rem;
 }
 .prosa ul {
-  list-style: disc;
+  list-style: square;
 }
 .prosa ol {
   list-style: decimal;
@@ -315,7 +386,7 @@
   margin-top: 0.35em;
 }
 .prosa li::marker {
-  color: var(--ink-3);
+  color: var(--forma-t);
 }
 .prosa strong {
   font-weight: 700;
@@ -323,17 +394,13 @@
 .prosa :not(pre) > code {
   font-family: var(--font-mono);
   font-size: 0.86em;
-  background: var(--paper-3);
+  background: var(--forma-f);
   padding: 0.1em 0.35em;
-  border-radius: 4px;
 }
 .prosa blockquote {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.15em;
-  color: var(--ink-2);
-  padding-left: 1rem;
-  border-left: 1px solid var(--rule);
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--forma);
+  color: var(--tinta-2);
 }
 .prosa table {
   width: 100%;
@@ -345,11 +412,11 @@
 .prosa td {
   text-align: left;
   padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid var(--rule);
+  border: 1px solid var(--forma);
 }
 .prosa th {
   font-weight: 700;
-  border-bottom-color: var(--rule-strong);
+  background: var(--forma-f);
 }
 
 /* Bloques de código (Shiki con temas claro/oscuro por variables). */
@@ -358,8 +425,7 @@
   font-size: 0.875rem;
   line-height: 1.6;
   padding: 1rem 1.15rem;
-  border-radius: 8px;
-  border: 1px solid var(--rule);
+  border: 1.5px solid var(--forma);
   overflow-x: auto;
   background-color: var(--shiki-light-bg) !important;
 }
@@ -406,7 +472,6 @@
 :root:not([data-js]):has(#lectura-tecnico:checked) .solo-tecnico {
   display: block;
 }
-/* Sin JS no podemos abrir <details>: lo forzamos con ::details-content donde exista. */
 :root:not([data-js]):has(#lectura-tecnico:checked) details.capa::details-content {
   content-visibility: visible;
   block-size: auto;

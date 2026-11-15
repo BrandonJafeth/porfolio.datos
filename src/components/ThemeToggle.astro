@@ -14,7 +14,7 @@ const OPCIONES = [
   <button
     type="button"
     id="tema-btn"
-    class="tema-btn grid size-10 place-items-center rounded-full text-ink-2 transition-colors hover:bg-paper-3 hover:text-ink"
+    class="tema-btn grid size-11 place-items-center text-tinta-2 transition-colors hover:bg-forma-f hover:text-tinta"
     aria-haspopup="true"
     aria-expanded="false"
     aria-controls="tema-menu"
@@ -27,7 +27,7 @@ const OPCIONES = [
   <ul
     id="tema-menu"
     hidden
-    class="absolute right-0 top-12 z-30 min-w-44 rounded-lg border border-rule bg-paper-2 p-1 text-base shadow-papel"
+    class="absolute right-0 top-12 z-30 min-w-44 border-2 border-forma-fuerte bg-papel-2 text-base shadow-flotante"
   >
     {
       OPCIONES.map((o) => (
@@ -35,10 +35,10 @@ const OPCIONES = [
           <button
             type="button"
             data-tema={o.valor}
-            class="tema-opcion flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-ink-2 hover:bg-paper-3 hover:text-ink"
+            class="tema-opcion flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-tinta-2 hover:bg-forma-f hover:text-tinta"
           >
             {o.texto}
-            <svg class="marca size-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+            <svg class="marca size-4 text-pluma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
           </button>
         </li>
       ))
@@ -67,7 +67,7 @@ const OPCIONES = [
     font-size: 0.6rem;
   }
   .tema-opcion[aria-pressed="true"] {
-    color: var(--ink);
+    color: var(--pluma);
     font-weight: 700;
   }
   .tema-opcion[aria-pressed="true"] .marca {

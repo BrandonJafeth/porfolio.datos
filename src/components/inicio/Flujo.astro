@@ -1,69 +1,74 @@
 ---
+/** Cómo trabajo: 6 pasos en orden, como una fila de campos numerados del formulario. */
 import { FLUJO } from "@/data/perfil"
 ---
 
-<ol class="flujo grid gap-0 sm:grid-cols-3 lg:grid-cols-6" aria-label="Flujo de trabajo en 6 pasos">
+<ol class="flujo" aria-label="Flujo de trabajo en 6 pasos">
   {
     FLUJO.map((f, i) => (
-      <li class="paso relative pb-7 pl-8 sm:pb-8 sm:pl-0 sm:pr-4 sm:pt-8" style={`--i:${i}`}>
-        <span class="nodo" aria-hidden="true" />
-        <span class="num block text-sm text-ink-3">Paso {i + 1}</span>
-        <span class="block font-serif text-xl leading-tight text-ink sm:text-[1.35rem]">{f.paso}</span>
-        <span class="mt-1 block text-base text-ink-2">{f.detalle}</span>
+      <li class="paso">
+        <span class="casillas" aria-hidden="true">
+          <span>{i + 1}</span>
+        </span>
+        <span class="sr-only">Paso {i + 1}: </span>
+        <span class="nombre">{f.paso}</span>
+        <span class="detalle">{f.detalle}</span>
       </li>
     ))
   }
 </ol>
 
 <style>
-  .paso::before {
-    content: "";
-    position: absolute;
-    background: var(--rule);
-    /* móvil: línea vertical */
-    left: 0.4rem;
-    top: 0.5rem;
-    bottom: -0.5rem;
-    width: 2px;
+  .flujo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 2px solid var(--forma);
   }
-  .paso:last-child::before {
-    display: none;
+  .paso {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+    padding: 0.9rem 1rem 1rem;
+    border-right: 1px solid var(--forma);
+    border-bottom: 1px solid var(--forma);
   }
-  .nodo {
-    position: absolute;
-    left: 0;
-    top: 0.35rem;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    background: var(--paper);
-    border: 2px solid var(--accent);
+  .paso:nth-child(2n) {
+    border-right: 0;
   }
-  .paso:last-child .nodo {
-    background: var(--accent);
+  .paso:nth-last-child(-n + 2) {
+    border-bottom: 0;
   }
-  @media (min-width: 40rem) {
-    .paso::before {
-      left: 0.45rem;
-      right: 0;
-      top: 0.4rem;
-      bottom: auto;
-      width: auto;
-      height: 2px;
-    }
-    .paso:nth-child(3n)::before {
-      display: none;
-    }
-    .nodo {
-      top: 0;
-    }
+  .casillas {
+    grid-row: span 2;
+  }
+  .nombre {
+    font-family: var(--font-titulo);
+    font-stretch: 112%;
+    font-weight: 750;
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+  .detalle {
+    font-size: 1rem;
+    color: var(--tinta-2);
   }
   @media (min-width: 64rem) {
-    .paso:nth-child(3n)::before {
-      display: block;
+    .flujo {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
     }
-    .paso:last-child::before {
-      display: none;
+    .paso {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.5rem;
+      border-bottom: 0;
+      border-right: 1px solid var(--forma) !important;
+    }
+    .paso:last-child {
+      border-right: 0 !important;
+    }
+    .casillas {
+      grid-row: auto;
+      justify-self: start;
     }
   }
 </style>

@@ -11,15 +11,18 @@ interface Props {
 }
 
 const { texto } = Astro.props
-type Parte = { tipo: "texto"; v: string } | { tipo: "termino"; t: string; cotidiano?: string }
+type Parte = { tipo: "texto"; v: string } | { tipo: "termino"; t: string; cotidiano?: string; pegado: string }
 
 const partes: Parte[] = []
 const re = /\{\{([^|}]+)(?:\|([^}]+))?\}\}/g
 let ultimo = 0
 for (const m of texto.matchAll(re)) {
   if (m.index > ultimo) partes.push({ tipo: "texto", v: texto.slice(ultimo, m.index) })
-  partes.push({ tipo: "termino", t: m[1]!.trim(), cotidiano: m[2]?.trim() })
   ultimo = m.index + m[0].length
+  // La puntuación que sigue al término va pegada a él (el botón no la deja sola en otra línea).
+  const pegado = /^[,.;:!?)»]+/.exec(texto.slice(ultimo))?.[0] ?? ""
+  ultimo += pegado.length
+  partes.push({ tipo: "termino", t: m[1]!.trim(), cotidiano: m[2]?.trim(), pegado })
 }
 if (ultimo < texto.length) partes.push({ tipo: "texto", v: texto.slice(ultimo) })
 ---
@@ -28,10 +31,8 @@ if (ultimo < texto.length) partes.push({ tipo: "texto", v: texto.slice(ultimo) }
   partes.map((p) =>
     p.tipo === "texto" ? (
       p.v
-    ) : p.cotidiano ? (
-      <Termino t={p.t}>{p.cotidiano}</Termino>
     ) : (
-      <Termino t={p.t} />
+      <span class="whitespace-nowrap">{p.cotidiano ? <Termino t={p.t}>{p.cotidiano}</Termino> : <Termino t={p.t} />}{p.pegado}</span>
     ),
   )
 }

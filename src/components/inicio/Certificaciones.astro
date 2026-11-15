@@ -1,53 +1,97 @@
 ---
-/** Lista de certificaciones con emisor, año, logo y botón "Verificar" (sin imágenes de certificados). */
+/** Certificaciones como tabla del formulario: logo, nombre, emisor y "Verificar". Sin imágenes de certificados. */
 import LogoEmisor from "@/components/LogoEmisor.astro"
 import ExternalLink from "@/components/icons/ExternalLink.astro"
 import { CERTIFICACIONES, PERFIL } from "@/data/perfil"
+import { t } from "@/i18n"
 ---
 
 <div>
-  <ol class="certs divide-y divide-rule border-y border-rule">
+  <ol class="certs">
     {
       CERTIFICACIONES.map((c) => (
-        <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 gap-y-2 py-4 sm:grid-cols-[2.25rem_minmax(0,1fr)_auto] sm:items-center">
-          <LogoEmisor logo={c.logo} class="mt-0.5 size-7 text-ink-2 sm:mt-0" />
-          <div>
-            <p class="text-lg font-bold leading-snug">{c.nombre}</p>
-            <p class="text-base text-ink-2">{[c.emisor, c.anio, ...(c.detalle ?? [])].filter(Boolean).join(", ")}</p>
-            {c.emisorDetalle && <p class="text-sm text-ink-3">{c.emisorDetalle}</p>}
+        <li class="cert">
+          <LogoEmisor logo={c.logo} class="logo" />
+          <div class="min-w-0">
+            <p class="nombre">{c.nombre}</p>
+            <p class="text-base text-tinta-2">{[c.emisor, c.anio, ...(c.detalle ?? [])].filter(Boolean).join(", ")}</p>
+            {c.emisorDetalle && <p class="text-sm text-tinta-3">{c.emisorDetalle}</p>}
           </div>
           {c.verificar ? (
-            <a
-              href={c.verificar}
-              target="_blank"
-              rel="noopener"
-              class="verificar col-start-2 inline-flex items-center gap-1.5 justify-self-start sm:col-start-auto sm:justify-self-end"
-              aria-label={`Verificar ${c.nombre} (abre en una pestaña nueva)`}
-            >
-              Verificar <ExternalLink class="size-4" />
+            <a href={c.verificar} target="_blank" rel="noopener" class="verificar" aria-label={`${t("certs.verificar")} ${c.nombre} (abre en una pestaña nueva)`}>
+              {t("certs.verificar")} <ExternalLink class="size-4" />
             </a>
           ) : (
-            <span class="col-start-2 text-sm text-ink-3 sm:col-start-auto sm:justify-self-end">Sin link público</span>
+            <span class="sin-link">{t("certs.sinLink")}</span>
           )}
         </li>
       ))
     }
   </ol>
-  <a href={PERFIL.enlaces.certificacionesLinkedIn} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 font-bold text-accent underline">
-    Ver todas en LinkedIn <ExternalLink class="size-4" />
+  <a href={PERFIL.enlaces.certificacionesLinkedIn} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 font-bold text-pluma underline decoration-2 underline-offset-4">
+    {t("certs.verTodas")} <ExternalLink class="size-4" />
   </a>
 </div>
 
 <style>
+  .certs {
+    border: 2px solid var(--forma);
+  }
+  .cert {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.5rem 0.9rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--forma);
+  }
+  .cert:last-child {
+    border-bottom: 0;
+  }
+  .cert :global(.logo) {
+    width: 1.75rem;
+    height: 1.75rem;
+    color: var(--tinta-2);
+    margin-top: 0.15rem;
+  }
+  .nombre {
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  .verificar,
+  .sin-link {
+    grid-column: 2;
+    justify-self: start;
+  }
   .verificar {
-    border: 1px solid var(--rule);
-    padding: 0.35rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0.3rem 0.85rem;
+    border: 2px solid var(--pluma);
+    color: var(--pluma);
+    font-weight: 700;
     font-size: 0.95rem;
-    font-weight: 650;
     text-decoration: none;
-    border-radius: 4px;
   }
   .verificar:hover {
-    border-color: var(--ink);
+    background: var(--pluma);
+    color: var(--pluma-ink);
+  }
+  .sin-link {
+    font-size: 0.9rem;
+    color: var(--tinta-3);
+  }
+  @media (min-width: 40rem) {
+    .cert {
+      grid-template-columns: 2rem minmax(0, 1fr) auto;
+      align-items: center;
+    }
+    .verificar,
+    .sin-link {
+      grid-column: 3;
+      justify-self: end;
+    }
   }
 </style>

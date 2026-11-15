@@ -1,19 +1,19 @@
 ---
 /**
- * Interruptor "Explicación simple / Detalle técnico".
+ * Interruptor "Explicación simple / Detalle técnico", como una pregunta de opción única del formulario.
  * - Sin JS: radios + CSS :has() (por defecto: simple).
  * - Con JS: guarda la preferencia (localStorage, con try/catch) y abre/cierra las capas técnicas.
  */
+import { t } from "@/i18n"
 ---
 
 <fieldset class="lectura">
-  <legend class="sr-only">Nivel de lectura</legend>
-  <div class="pista relative inline-grid grid-cols-2 rounded-full border border-rule bg-paper-2 p-1 text-base">
-    <span class="indicador" aria-hidden="true"></span>
+  <legend class="etiqueta">{t("lectura.nivel")}</legend>
+  <div class="opciones">
     <input type="radio" name="lectura" id="lectura-simple" value="simple" checked class="sr-only" />
-    <label for="lectura-simple" class="opcion"><span class="largo">Explicación </span><span class="cap">s</span>imple</label>
+    <label for="lectura-simple" class="opcion"><span class="caja" aria-hidden="true"></span><span><span class="largo">Explicación </span><span class="cap">s</span>imple</span></label>
     <input type="radio" name="lectura" id="lectura-tecnico" value="tecnico" class="sr-only" />
-    <label for="lectura-tecnico" class="opcion"><span class="largo">Detalle </span><span class="cap">t</span>écnico</label>
+    <label for="lectura-tecnico" class="opcion"><span class="caja" aria-hidden="true"></span><span><span class="largo">Detalle </span><span class="cap">t</span>écnico</span></label>
   </div>
 </fieldset>
 
@@ -24,19 +24,54 @@
     margin: 0;
     min-width: 0;
   }
-  .opcion {
-    position: relative;
-    z-index: 1;
-    cursor: pointer;
-    padding: 0.45rem 1rem;
-    border-radius: 999px;
-    text-align: center;
-    white-space: nowrap;
-    color: var(--ink-2);
-    transition: color 200ms var(--ease-salida);
+  .lectura .etiqueta {
+    margin-bottom: 0.35rem;
   }
-  .cap {
-    text-transform: none;
+  .opciones {
+    display: flex;
+    border: 2px solid var(--forma-fuerte);
+  }
+  .opcion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.95rem;
+    cursor: pointer;
+    font-size: 1rem;
+    white-space: nowrap;
+    color: var(--tinta-2);
+  }
+  .opcion + input + .opcion,
+  input + .opcion + input + .opcion {
+    border-left: 1px solid var(--forma);
+  }
+  .caja {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid var(--forma-fuerte);
+  }
+  .opcion:hover {
+    color: var(--tinta);
+  }
+  input:checked + .opcion {
+    color: var(--pluma);
+    font-weight: 700;
+    background: var(--pluma-f);
+  }
+  input:checked + .opcion .caja {
+    border-color: var(--pluma);
+  }
+  input:checked + .opcion .caja::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: var(--pluma);
+  }
+  input:focus-visible + .opcion {
+    outline: 3px solid var(--pluma);
+    outline-offset: 2px;
   }
   @media (max-width: 30rem) {
     .largo {
@@ -45,29 +80,6 @@
     .cap {
       text-transform: uppercase;
     }
-  }
-  .opcion:hover {
-    color: var(--ink);
-  }
-  input:checked + .opcion {
-    color: var(--accent-ink);
-    font-weight: 700;
-  }
-  input:focus-visible + .opcion {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .indicador {
-    position: absolute;
-    inset-block: 0.25rem;
-    left: 0.25rem;
-    width: calc(50% - 0.25rem);
-    border-radius: 999px;
-    background: var(--accent);
-    transition: translate 320ms var(--ease-salida);
-  }
-  .pista:has(#lectura-tecnico:checked) .indicador {
-    translate: 100% 0;
   }
 </style>
 

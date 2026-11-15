@@ -3,13 +3,30 @@ import Layout from "@/layouts/Layout.astro"
 ---
 
 <Layout title="Página no encontrada" description="Esta página no existe." noindex>
-  <div class="contenedor py-24 sm:py-32">
-    <p class="num font-serif text-8xl leading-none text-accent">404</p>
-    <h1 class="mt-6 max-w-[18ch] text-4xl sm:text-6xl">Esta pregunta no tiene respuesta… todavía.</h1>
-    <p class="medida mt-4 text-xl text-ink-2">La página que buscás no existe o cambió de dirección.</p>
-    <p class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-lg">
-      <a href="/" class="font-bold text-accent underline">Ir al inicio</a>
-      <a href="/casos/" class="font-bold text-accent underline">Ver los casos</a>
+  <div class="contenedor py-16 sm:py-24">
+    <div class="boleta-404 max-w-[46rem]">
+      <div class="p-5 sm:p-6">
+        <span class="etiqueta">Pregunta</span>
+        <h1 class="mt-1 text-4xl sm:text-5xl">¿Dónde está esta página?</h1>
+      </div>
+      <div class="respuesta p-5 sm:p-6">
+        <span class="etiqueta">Respuesta</span>
+        <p class="mt-1 text-2xl font-semibold text-pluma">No existe o cambió de dirección. Error <span class="num">404</span>.</p>
+      </div>
+    </div>
+    <p class="mt-6 flex flex-wrap gap-3">
+      <a href="/" class="boton boton-lleno">Ir al inicio</a>
+      <a href="/casos/" class="boton">Ver los casos</a>
     </p>
   </div>
 </Layout>
+
+<style>
+  .boleta-404 {
+    border: 2px solid var(--forma);
+  }
+  .respuesta {
+    border-top: 1px solid var(--forma);
+    background: var(--forma-f);
+  }
+</style>

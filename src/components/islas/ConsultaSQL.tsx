@@ -108,9 +108,9 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
 
   if (estado.tipo === "cerrado" || estado.tipo === "error") {
     return (
-      <div class="consulta rounded-lg border border-rule bg-paper-2 p-5">
-        <p class="font-serif text-xl text-ink">Probá los datos vos mismo</p>
-        <p class="mt-1 text-base text-ink-2">
+      <div class="consulta border-2 border-forma bg-papel-2 p-5">
+        <p class="font-titulo text-xl text-tinta">Probá los datos vos mismo</p>
+        <p class="mt-1 text-base text-tinta-2">
           Escribí consultas SQL sobre los datos de este caso, directo en tu navegador. Descarga unos 7 MB.
         </p>
         {estado.tipo === "error" && (
@@ -121,7 +121,7 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
         <button
           type="button"
           onClick={abrir}
-          class="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-base font-bold text-accent-ink"
+          class="mt-4 inline-flex items-center gap-2 bg-pluma px-5 py-2.5 text-base font-bold text-pluma-ink"
         >
           {estado.tipo === "error" ? "Reintentar" : "Abrir consola SQL"}
         </button>
@@ -131,15 +131,15 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
 
   if (estado.tipo === "cargando") {
     return (
-      <div class="consulta rounded-lg border border-rule bg-paper-2 p-5" aria-live="polite" aria-busy="true">
-        <p class="text-base text-ink-2">{estado.paso}</p>
+      <div class="consulta border-2 border-forma bg-papel-2 p-5" aria-live="polite" aria-busy="true">
+        <p class="text-base text-tinta-2">{estado.paso}</p>
       </div>
     )
   }
 
   return (
-    <div class="consulta rounded-lg border border-rule bg-paper-2 p-4">
-      <label for="consulta-sql" class="text-sm font-bold text-ink-2">
+    <div class="consulta border-2 border-forma bg-papel-2 p-4">
+      <label for="consulta-sql" class="text-sm font-bold text-tinta-2">
         Consulta sobre la tabla <code>{tabla}</code>
       </label>
       <textarea
@@ -151,18 +151,18 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
         }}
         rows={4}
         spellcheck={false}
-        class="mt-2 w-full rounded-md border border-rule bg-paper p-3 font-mono text-sm text-ink"
+        class="mt-2 w-full border border-forma bg-papel p-3 font-mono text-sm text-tinta"
       />
       <div class="mt-2 flex items-center gap-3">
         <button
           type="button"
           onClick={correr}
           disabled={corriendo}
-          class="rounded-full bg-accent px-4 py-2 text-base font-bold text-accent-ink disabled:opacity-60"
+          class="bg-pluma px-4 py-2 text-base font-bold text-pluma-ink disabled:opacity-60"
         >
           {corriendo ? "Corriendo…" : "Correr"}
         </button>
-        <span class="text-sm text-ink-3">Ctrl + Enter</span>
+        <span class="text-sm text-tinta-3">Ctrl + Enter</span>
       </div>
       <div aria-live="polite">
         {errorConsulta && (
@@ -172,13 +172,13 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
         )}
         {resultado && (
           <>
-            <p class="mt-3 text-sm text-ink-3">
+            <p class="mt-3 text-sm text-tinta-3">
               {fmt.format(resultado.total)} filas · {Math.round(resultado.ms)} ms
               {resultado.total > MAX_FILAS && ` · mostrando ${MAX_FILAS}`}
             </p>
-            <div class="mt-2 max-h-96 overflow-auto rounded-md border border-rule">
+            <div class="mt-2 max-h-96 overflow-auto border border-forma">
               <table class="num w-full text-sm">
-                <thead class="sticky top-0 bg-paper-3">
+                <thead class="sticky top-0 bg-forma-f">
                   <tr>
                     {resultado.columnas.map((c) => (
                       <th scope="col" class="px-3 py-2 text-left font-bold">
@@ -189,7 +189,7 @@ export default function ConsultaSQL({ archivo, tabla, consultaInicial }: Props) 
                 </thead>
                 <tbody>
                   {resultado.filas.map((f) => (
-                    <tr class="border-t border-rule">
+                    <tr class="border-t border-forma">
                       {f.map((v) => (
                         <td class="px-3 py-1.5">{celda(v)}</td>
                       ))}

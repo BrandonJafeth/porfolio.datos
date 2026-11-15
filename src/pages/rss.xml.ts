@@ -6,7 +6,7 @@ import { PERFIL, SITIO } from "@/data/perfil"
 export const GET: APIRoute = async (context) => {
   const casos = (await obtenerCasos()).filter((c) => c.data.estado === "publicado")
   return rss({
-    title: `Casos · ${PERFIL.nombreCorto}`,
+    title: `Casos de ${PERFIL.nombreCorto}`,
     description: SITIO.descripcion,
     site: context.site ?? SITIO.url,
     customData: "<language>es-CR</language>",

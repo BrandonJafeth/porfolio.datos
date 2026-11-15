@@ -3,8 +3,11 @@ import { generarOG } from "@/lib/og"
 
 export const GET: APIRoute = async () => {
   const png = await generarOG({
-    titulo: "Convierto datos públicos de Costa Rica en respuestas que cualquiera entiende.",
-    bajada: "Analista de datos · Full Stack Developer",
+    etiquetaTitulo: "Ocupación",
+    titulo: "Analista de datos en Costa Rica",
+    etiquetaBajada: "¿Qué hace?",
+    bajada: "Convierto datos en respuestas que cualquiera entiende.",
+    etiqueta: "SQL, Python, Power BI",
   })
   return new Response(png as BodyInit, { headers: { "Content-Type": "image/png" } })
 }

@@ -20,6 +20,19 @@ export async function obtenerCasos(): Promise<Caso[]> {
 
 export const urlCaso = (c: Caso) => `/casos/${c.id}/`
 
+/**
+ * Número de caso (P1, P2…): orden de publicación, del más viejo al más nuevo.
+ * Es estable: un caso nuevo no cambia el número de los anteriores.
+ */
+export function numerarCasos(casos: Caso[]): Map<string, number> {
+  const orden = [...casos].sort((a, b) => a.data.fecha.valueOf() - b.data.fecha.valueOf() || a.id.localeCompare(b.id))
+  return new Map(orden.map((c, i) => [c.id, i + 1]))
+}
+
+export async function numeroDeCaso(id: string): Promise<number> {
+  return numerarCasos(await obtenerCasos()).get(id) ?? 0
+}
+
 /** Quita la marca de glosario: {{mediana|el valor del medio}} → "el valor del medio". */
 export const textoPlano = (t: string) =>
   t.replace(/\{\{([^|}]+)\|([^}]+)\}\}/g, "$2").replace(/\{\{([^}]+)\}\}/g, "$1")

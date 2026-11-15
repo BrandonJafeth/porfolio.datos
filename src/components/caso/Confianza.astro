@@ -1,4 +1,8 @@
 ---
+/**
+ * Confianza como pregunta del formulario con tres opciones; la elegida va marcada en azul pluma.
+ * El texto dice el nivel y el motivo en palabras simples.
+ */
 import TextoGlosario from "./TextoGlosario.astro"
 import { motivoConfianzaPorDefecto, textoConfianza } from "@/lib/casos"
 
@@ -7,38 +11,56 @@ interface Props {
   motivo?: string
 }
 const { nivel, motivo = motivoConfianzaPorDefecto[nivel] } = Astro.props
-const llenos = { alta: 3, media: 2, baja: 1 }[nivel]
+const opciones = ["alta", "media", "baja"] as const
 ---
 
-<div class:list={["confianza flex items-start gap-4", `nivel-${nivel}`]}>
-  <svg class="mt-1 shrink-0" width="42" height="14" viewBox="0 0 42 14" aria-hidden="true">
-    {[0, 1, 2].map((i) => <rect x={i * 15} y="0" width="12" height="14" rx="2" class={i < llenos ? "lleno" : "vacio"} />)}
-  </svg>
-  <p class="medida text-lg leading-snug">
-    <strong class="nivel font-bold">{textoConfianza[nivel]}:</strong>
+<div class="confianza">
+  <ul class="opciones" aria-hidden="true">
+    {
+      opciones.map((o) => (
+        <li class:list={["opcion", o === nivel && "marcada"]}>
+          <span class="caja" />
+          {o[0]!.toUpperCase() + o.slice(1)}
+        </li>
+      ))
+    }
+  </ul>
+  <p class="medida mt-3 text-lg leading-snug">
+    <strong class="font-bold">{textoConfianza[nivel]}.</strong>
     <TextoGlosario texto={motivo} />
   </p>
 </div>
 
 <style>
-  .nivel-alta {
-    --c: var(--accent);
+  .opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
   }
-  .nivel-media {
-    --c: var(--nivel-media);
+  .opcion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--tinta-3);
   }
-  .nivel-baja {
-    --c: var(--nivel-baja);
+  .caja {
+    width: 1.05rem;
+    height: 1.05rem;
+    border: 1.5px solid var(--forma-fuerte);
+    position: relative;
   }
-  .lleno {
-    fill: var(--c);
+  .marcada {
+    color: var(--pluma);
+    font-weight: 700;
   }
-  .vacio {
-    fill: none;
-    stroke: var(--rule);
-    stroke-width: 1.5;
+  .marcada .caja {
+    border-color: var(--pluma);
   }
-  .nivel {
-    color: var(--c);
+  .marcada .caja::after {
+    content: "";
+    position: absolute;
+    inset: 2.5px;
+    background: var(--pluma);
   }
 </style>

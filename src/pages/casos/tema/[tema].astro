@@ -48,16 +48,16 @@ const jsonLd = [
 
 <Layout title={tx.titulo} description={tx.descripcion} jsonLd={jsonLd} noindex={casos.every((c) => c.data.estado === "borrador")}>
   <div class="contenedor pt-12 sm:pt-20">
-    <nav aria-label="Ruta de navegación" class="text-base text-ink-2">
-      <a href="/casos/" class="underline decoration-rule hover:text-ink">Casos</a>
-      <span aria-hidden="true" class="mx-1.5 text-ink-3">/</span>
+    <nav aria-label="Ruta de navegación" class="text-base text-tinta-2">
+      <a href="/casos/" class="underline decoration-forma-fuerte hover:text-tinta">Casos</a>
+      <span aria-hidden="true" class="mx-1.5 text-forma-t">/</span>
       <span>{nombre}</span>
     </nav>
     <header class="mt-6 max-w-3xl">
-      <h1 class="text-4xl tracking-[-0.025em] sm:text-6xl">{tx.h1}</h1>
-      <p class="medida mt-4 text-xl text-ink-2">{tx.intro}</p>
+      <h1 class="text-4xl sm:text-6xl">{tx.h1}</h1>
+      <p class="medida mt-4 text-xl text-tinta-2">{tx.intro}</p>
     </header>
-    <div class="mt-10 border-b border-rule">
+    <div class="mt-10 border-b border-forma">
       {casos.map((c) => <TarjetaCaso caso={c} nivel={2} />)}
     </div>
   </div>

@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <style>
-    .f { fill: #f5f1e8; } .l { stroke: #0d6a65; } .t { stroke: #1b1e22; }
-    @media (prefers-color-scheme: dark) { .f { fill: #1b1e21; } .l { stroke: #5fc7bb; } .t { stroke: #ede8de; } }
+    .p { fill: #fcfcfa; } .f { stroke: #c0614a; } .a { stroke: #1c3fc4; } .c { fill: #1c3fc4; }
+    @media (prefers-color-scheme: dark) { .p { fill: #171a1f; } .f { stroke: #b5705c; } .a { stroke: #93a9ff; } .c { fill: #93a9ff; } }
   </style>
-  <rect class="f" width="32" height="32" rx="7"/>
-  <path class="t" d="M7 25h18" stroke-width="2" stroke-linecap="round" fill="none"/>
-  <path class="l" d="M7 19l5-5 4 3 9-8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect class="p f" x="2" y="2" width="28" height="28" stroke-width="2.5"/>
+  <path class="f" d="M2 11h28" stroke-width="1.5"/>
+  <rect class="c" x="6" y="5" width="3" height="3"/>
+  <path class="a" d="M7 25l5-6 4 3 9-8" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
 </svg>

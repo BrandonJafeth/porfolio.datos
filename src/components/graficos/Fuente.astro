@@ -8,9 +8,7 @@ import { fecha } from "@/lib/formato"
 const { nombre, url, actualizado } = Astro.props
 ---
 
-<p class="fuente text-sm leading-snug text-ink-3">
-  <span class="versalitas text-ink-2">Fuente</span>
-  <a href={url} rel="noopener" class="underline decoration-rule underline-offset-3 hover:text-ink hover:decoration-current">{nombre}</a>{
-    actualizado && <span>. Datos al {fecha(actualizado)}</span>
-  }.
+<p class="fuente text-sm leading-snug text-tinta-2">
+  <span class="font-semibold text-forma-t">Fuente:</span>{" "}
+  <a href={url} rel="noopener" class="underline decoration-forma-fuerte underline-offset-3 hover:text-tinta">{nombre}</a>{actualizado && <span>. Datos al {fecha(actualizado)}</span>}.
 </p>

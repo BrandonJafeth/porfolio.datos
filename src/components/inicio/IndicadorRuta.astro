@@ -1,10 +1,11 @@
 ---
-/** Indicador discreto bajo el hero: en qué semana de la ruta voy. Enlaza a /ruta. */
+/** Indicador discreto de la ruta: semana actual en casillas + enlace a /ruta. */
 import { resumenRuta, ruta } from "@/lib/ruta"
 import { fecha } from "@/lib/formato"
 import { t } from "@/i18n"
 
 const r = resumenRuta()
+const digitos = String(Math.min(Math.max(r.actual, 0), r.total)).padStart(2, "0").split("")
 const texto = !r.empezo
   ? t("ruta.empieza", { fecha: fecha(ruta.inicio) })
   : r.termino
@@ -14,27 +15,16 @@ const texto = !r.empezo
       : t("ruta.enProgreso", { semana: r.actual, total: r.total })
 ---
 
-<a href="/ruta/" class="indicador-ruta group inline-flex items-center gap-2 text-base text-ink-2 no-underline hover:text-ink">
-  <span class="punto" aria-hidden="true"></span>
-  <span>{texto}</span>
-  <span class="font-bold text-accent underline underline-offset-4">{t("ruta.ver")}</span>
-</a>
-
-<style>
-  .punto {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 50%, transparent);
-    animation: latido 2.4s ease-out infinite;
+<p class="flex flex-wrap items-center gap-x-3 gap-y-2 text-base">
+  {
+    r.empezo && (
+      <span class="casillas" aria-hidden="true">
+        {digitos.map((d) => (
+          <span>{d}</span>
+        ))}
+      </span>
+    )
   }
-  @keyframes latido {
-    70% {
-      box-shadow: 0 0 0 0.45rem transparent;
-    }
-    100% {
-      box-shadow: 0 0 0 0 transparent;
-    }
-  }
-</style>
+  <span>{texto}.</span>
+  <a href="/ruta/" class="font-bold text-pluma underline decoration-2 underline-offset-4">{t("ruta.ver")}</a>
+</p>

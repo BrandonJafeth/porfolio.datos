@@ -44,7 +44,7 @@ const cotidiano = Astro.slots.has("default") ? (await Astro.slots.render("defaul
     padding: 0;
     cursor: help;
     text-decoration: underline dotted;
-    text-decoration-color: var(--accent);
+    text-decoration-color: var(--forma-fuerte);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.22em;
   }
@@ -58,11 +58,10 @@ const cotidiano = Astro.slots.has("default") ? (await Astro.slots.render("defaul
     margin: 0 auto;
     max-width: 30rem;
     padding: 0.85rem 1rem;
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    background: var(--paper-2);
-    color: var(--ink);
-    box-shadow: var(--shadow);
+    border: 2px solid var(--forma-fuerte);
+    background: var(--papel-2);
+    color: var(--tinta);
+    box-shadow: var(--sombra);
     font-family: var(--font-sans);
     font-size: 1rem;
     font-weight: 400;

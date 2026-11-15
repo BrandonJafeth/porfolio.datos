@@ -48,25 +48,25 @@ const css = reglas.join("\n")
 >
   <div class="pagina-casos contenedor pt-12 sm:pt-20">
     <header class="max-w-3xl">
-      <h1 class="text-5xl tracking-[-0.025em] sm:text-7xl">Casos</h1>
-      <p class="medida mt-4 text-xl text-ink-2">
-        Una pregunta, una respuesta clara y el método completo para quien quiera revisarlo.
+      <h1 class="text-5xl sm:text-7xl">Casos</h1>
+      <p class="medida mt-4 text-xl text-tinta-2">
+        Cada caso responde una pregunta con datos públicos. Abajo podés filtrarlos por herramienta o tema.
       </p>
     </header>
 
     {
       casos.length === 0 ? (
-        <div class="mt-14 rounded-md border border-dashed border-rule p-8 sm:p-10">
-          <p class="font-serif text-2xl sm:text-3xl">Todavía no hay casos publicados.</p>
-          <p class="mt-2 text-lg text-ink-2">
-            El primero sale pronto. Mientras tanto, podés <a href="/ruta/" class="text-accent underline">ver mi avance</a>.
+        <div class="mt-14 border-2 border-forma bg-forma-f p-6 sm:p-8">
+          <p class="text-2xl font-bold sm:text-3xl" style="font-family: var(--font-titulo); font-stretch: 112%">Todavía no hay casos publicados.</p>
+          <p class="mt-2 text-lg text-tinta-2">
+            El primero sale pronto. Mientras tanto, podés <a href="/ruta/" class="text-pluma underline">ver mi avance</a>.
           </p>
         </div>
       ) : (
         <>
-          <form class="filtros mt-12 space-y-5" aria-label="Filtrar casos">
+          <form class="filtros mt-10 grid gap-5 border-2 border-forma p-4 sm:p-5" aria-label="Filtrar casos">
             <fieldset>
-              <legend class="versalitas mb-2 text-sm text-ink-2">Herramienta</legend>
+              <legend class="etiqueta mb-2">Herramienta</legend>
               <div class="flex flex-wrap gap-2">
                 <input type="radio" name="h" id="h-todas" class="sr-only" checked />
                 <label for="h-todas" class="chip">Todas</label>
@@ -76,7 +76,7 @@ const css = reglas.join("\n")
                     <>
                       <input type="radio" name="h" id={`h-${h.slug}`} class="sr-only" />
                       <label for={`h-${h.slug}`} class="chip">
-                        {h.nombre} <span class="num text-ink-3">{h.total}</span>
+                        {h.nombre} <span class="num text-tinta-3">{h.total}</span>
                       </label>
                     </>
                   ))}
@@ -84,7 +84,7 @@ const css = reglas.join("\n")
             </fieldset>
             {temasF.length > 1 && (
               <fieldset>
-                <legend class="versalitas mb-2 text-sm text-ink-2">Tema</legend>
+                <legend class="etiqueta mb-2">Tema</legend>
                 <div class="flex flex-wrap gap-2">
                   <input type="radio" name="t" id="t-todos" class="sr-only" checked />
                   <label for="t-todos" class="chip">Todos</label>
@@ -102,11 +102,11 @@ const css = reglas.join("\n")
             {temasF.length <= 1 && <input type="radio" name="t" id="t-todos" class="sr-only" checked hidden />}
           </form>
 
-          <div class="lista mt-10 border-b border-rule">
+          <div class="lista mt-10 border-b border-forma">
             {casos.map((c) => (
               <TarjetaCaso caso={c} nivel={2} />
             ))}
-            <p class="sin-resultados hidden border-t border-rule py-10 text-lg text-ink-2" role="status">
+            <p class="sin-resultados hidden border-t border-forma py-10 text-lg text-tinta-2" role="status">
               Ningún caso combina esos filtros todavía. Probá con otra herramienta o tema.
             </p>
           </div>
@@ -121,33 +121,42 @@ const css = reglas.join("\n")
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
+    min-height: 2.75rem;
     cursor: pointer;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+    border: 1.5px solid var(--forma);
     font-size: 1rem;
-    color: var(--ink-2);
-    transition:
-      border-color 180ms var(--ease-salida),
-      background 180ms var(--ease-salida);
+    color: var(--tinta-2);
+  }
+  .chip::before {
+    content: "";
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    border: 1.5px solid var(--forma-fuerte);
+    background: var(--papel);
   }
   .chip:hover {
-    border-color: var(--ink);
-    color: var(--ink);
+    border-color: var(--forma-fuerte);
+    color: var(--tinta);
   }
   input:checked + .chip {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
-    font-weight: 650;
+    color: var(--pluma);
+    border-color: var(--pluma);
+    background: var(--pluma-f);
+    font-weight: 700;
+  }
+  input:checked + .chip::before {
+    border-color: var(--pluma);
+    background: var(--pluma);
+    box-shadow: inset 0 0 0 2px var(--papel);
   }
   input:checked + .chip span {
     color: inherit;
-    opacity: 0.75;
   }
   input:focus-visible + .chip {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--pluma);
     outline-offset: 2px;
   }
 </style>

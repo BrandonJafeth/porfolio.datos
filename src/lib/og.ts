@@ -1,6 +1,6 @@
 /**
  * Imágenes Open Graph (1200×630) generadas en build con satori + resvg.
- * Muestran la pregunta y la respuesta corta: así se ven bien al compartir en LinkedIn.
+ * Estilo Boleta: la pregunta como ítem del formulario y la respuesta escrita en azul pluma.
  */
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
@@ -18,50 +18,77 @@ const fuente = (paquete: string, archivo: string) =>
 
 let fuentes: Awaited<ReturnType<typeof cargarFuentes>> | undefined
 async function cargarFuentes() {
-  const [s5, s5x, s6, s6x, a4, a4x, a7, a7x] = await Promise.all([
-    fuente("newsreader", "newsreader-latin-500-normal.woff"),
-    fuente("newsreader", "newsreader-latin-ext-500-normal.woff"),
-    fuente("newsreader", "newsreader-latin-600-normal.woff"),
-    fuente("newsreader", "newsreader-latin-ext-600-normal.woff"),
-    fuente("atkinson-hyperlegible-next", "atkinson-hyperlegible-next-latin-400-normal.woff"),
-    fuente("atkinson-hyperlegible-next", "atkinson-hyperlegible-next-latin-ext-400-normal.woff"),
-    fuente("atkinson-hyperlegible-next", "atkinson-hyperlegible-next-latin-700-normal.woff"),
-    fuente("atkinson-hyperlegible-next", "atkinson-hyperlegible-next-latin-ext-700-normal.woff"),
+  const [a7, a7x, a8, a8x, p4, p4x, p6, p6x, colon] = await Promise.all([
+    fuente("archivo", "archivo-latin-700-normal.woff"),
+    fuente("archivo", "archivo-latin-ext-700-normal.woff"),
+    fuente("archivo", "archivo-latin-800-normal.woff"),
+    fuente("archivo", "archivo-latin-ext-800-normal.woff"),
+    fuente("public-sans", "public-sans-latin-400-normal.woff"),
+    fuente("public-sans", "public-sans-latin-ext-400-normal.woff"),
+    fuente("public-sans", "public-sans-latin-600-normal.woff"),
+    fuente("public-sans", "public-sans-latin-ext-600-normal.woff"),
+    fuente("noto-sans", "noto-sans-latin-ext-700-normal.woff"),
   ])
-  const f = (name: string, data: Buffer, weight: 400 | 500 | 600 | 700) => ({ name, data, weight, style: "normal" as const })
+  const f = (name: string, data: Buffer, weight: 400 | 600 | 700 | 800) => ({ name, data, weight, style: "normal" as const })
   return [
-    f("Newsreader", s5, 500),
-    f("Newsreader", s5x, 500),
-    f("Newsreader", s6, 600),
-    f("Newsreader", s6x, 600),
-    f("Atkinson", a4, 400),
-    f("Atkinson", a4x, 400),
-    f("Atkinson", a7, 700),
-    f("Atkinson", a7x, 700),
+    f("Archivo", a7, 700),
+    f("Archivo", a7x, 700),
+    f("Archivo", a8, 800),
+    f("Archivo", a8x, 800),
+    f("Public Sans", p4, 400),
+    f("Public Sans", p4x, 400),
+    f("Public Sans", p6, 600),
+    f("Public Sans", p6x, 600),
+    f("Colon CR", colon, 700),
   ]
 }
 
-const COLOR = {
-  papel: "#f5f1e8",
-  tinta: "#1b1e22",
-  tinta2: "#4b5057",
-  acento: "#0d6a65",
-  lavado: "#c9e4de",
-  regla: "#d6cdbc",
+const C = {
+  papel: "#fcfcfa",
+  tinta: "#14161a",
+  tinta2: "#464b53",
+  forma: "#eba591",
+  formaT: "#a3412a",
+  formaF: "#fcece6",
+  pluma: "#1c3fc4",
 }
 
 export type DatosOG = {
   /** Texto grande (la pregunta). */
   titulo: string
-  /** Texto resaltado (la respuesta corta). */
+  /** Texto en azul pluma (la respuesta corta). */
   bajada?: string
-  /** Etiqueta pequeña arriba a la derecha (tema). */
+  /** Campo superior derecho (tema). */
   etiqueta?: string
+  /** Etiquetas de los campos. */
+  etiquetaTitulo?: string
+  etiquetaBajada?: string
 }
 
-export async function generarOG({ titulo, bajada, etiqueta }: DatosOG): Promise<Uint8Array> {
+/**
+ * Archivo y Public Sans no traen el signo de colón (₡): lo dibujamos con Noto Sans.
+ * Satori necesita palabras como hijos separados para poder partir líneas.
+ */
+const conColon = (texto: string) =>
+  texto.split(/(\s+)/).map((pal) =>
+    pal.includes("₡")
+      ? h("span", { display: "flex" }, ...pal.split(/(₡)/).filter(Boolean).map((t) => (t === "₡" ? h("span", { fontFamily: "Colon CR" }, t) : t)))
+      : pal.trim() === ""
+        ? h("span", { width: 9 }, " ")
+        : h("span", {}, pal),
+  )
+
+const etiqueta = (t: string) => h("span", { fontSize: 22, fontWeight: 600, color: C.formaT, fontFamily: "Public Sans" }, t)
+
+export async function generarOG({
+  titulo,
+  bajada,
+  etiqueta: tema,
+  etiquetaTitulo = "Pregunta",
+  etiquetaBajada = "Respuesta",
+}: DatosOG): Promise<Uint8Array> {
   fuentes ??= await cargarFuentes()
-  const tamTitulo = titulo.length > 60 ? 62 : titulo.length > 40 ? 72 : 84
+  const tamTitulo = titulo.length > 70 ? 52 : titulo.length > 45 ? 60 : 72
 
   const arbol = h(
     "div",
@@ -70,68 +97,62 @@ export async function generarOG({ titulo, bajada, etiqueta }: DatosOG): Promise<
       height: "100%",
       display: "flex",
       flexDirection: "column",
-      backgroundColor: COLOR.papel,
-      padding: "56px 72px",
-      fontFamily: "Atkinson",
-      color: COLOR.tinta,
+      backgroundColor: C.papel,
+      padding: 40,
+      fontFamily: "Public Sans",
+      color: C.tinta,
     },
     h(
       "div",
-      {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "baseline",
-        borderBottom: `2px solid ${COLOR.tinta}`,
-        paddingBottom: 16,
-      },
+      { display: "flex", flexDirection: "column", width: 1120, height: 500, border: `3px solid ${C.forma}` },
+      // Fila superior: marca | tema
       h(
         "div",
-        { display: "flex", alignItems: "baseline", gap: 14 },
-        h("span", { fontFamily: "Newsreader", fontWeight: 600, fontSize: 34 }, "Brandon Carrillo"),
-        h("span", { fontSize: 24, fontWeight: 700, color: COLOR.acento, letterSpacing: 3 }, "DATOS"),
+        { display: "flex", borderBottom: `2px solid ${C.forma}` },
+        h(
+          "div",
+          { display: "flex", alignItems: "baseline", gap: 12, padding: "16px 22px", flexGrow: 1, borderRight: `2px solid ${C.forma}` },
+          h("span", { fontFamily: "Archivo", fontWeight: 800, fontSize: 30 }, "Brandon Carrillo"),
+          h("span", { fontSize: 26, color: C.formaT }, "datos"),
+        ),
+        h(
+          "div",
+          { display: "flex", flexDirection: "column", padding: "10px 22px", width: 330 },
+          etiqueta("Tema"),
+          h("span", { fontFamily: "Archivo", fontWeight: 700, fontSize: 28 }, tema ?? "Costa Rica"),
+        ),
       ),
-      h("span", { fontSize: 24, color: COLOR.tinta2, letterSpacing: 2 }, (etiqueta ?? "Costa Rica").toUpperCase()),
-    ),
-    h(
-      "div",
-      { display: "flex", flexDirection: "column", flexGrow: 1, justifyContent: "center", gap: 30 },
+      // Pregunta
       h(
         "div",
-        {
-          fontFamily: "Newsreader",
-          fontWeight: 600,
-          fontSize: tamTitulo,
-          lineHeight: 1.04,
-          letterSpacing: -1.5,
-          maxWidth: 1000,
-        },
-        titulo,
+        { display: "flex", flexDirection: "column", padding: "18px 22px 16px", flexGrow: 1, justifyContent: "center", gap: 6 },
+        etiqueta(etiquetaTitulo),
+        h("div", { fontFamily: "Archivo", fontWeight: 800, fontSize: tamTitulo, lineHeight: 1.04, letterSpacing: -1.5 }, titulo),
       ),
+      // Respuesta
       ...(bajada
         ? [
             h(
               "div",
-              { display: "flex", maxWidth: 1000 },
-              h(
-                "span",
-                {
-                  fontSize: bajada.length > 110 ? 30 : 34,
-                  lineHeight: 1.35,
-                  backgroundColor: COLOR.lavado,
-                  padding: "4px 10px",
-                  color: COLOR.tinta,
-                },
-                bajada,
-              ),
+              {
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+                padding: "16px 22px 20px",
+                borderTop: `2px solid ${C.forma}`,
+                backgroundColor: C.formaF,
+              },
+              etiqueta(etiquetaBajada),
+              h("div", { display: "flex", flexWrap: "wrap", fontSize: bajada.length > 100 ? 28 : 33, fontWeight: 600, lineHeight: 1.3, color: C.pluma }, ...conColon(bajada)),
             ),
           ]
         : []),
     ),
     h(
       "div",
-      { display: "flex", justifyContent: "space-between", fontSize: 24, color: COLOR.tinta2 },
+      { display: "flex", justifyContent: "space-between", width: 1120, fontSize: 22, color: C.tinta2, paddingTop: 14 },
       h("span", {}, "datos.brandoncarrillo.dev"),
-      h("span", {}, "Nicoya, Guanacaste"),
+      h("span", {}, "Nicoya, Guanacaste, Costa Rica"),
     ),
   )
 

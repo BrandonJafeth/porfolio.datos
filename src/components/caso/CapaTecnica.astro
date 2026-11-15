@@ -1,9 +1,8 @@
 ---
 /**
- * "Para curiosos: cómo lo hice" — capa técnica plegable (cerrada por defecto).
+ * "Para curiosos: cómo lo hice": capa técnica plegable (cerrada por defecto).
  * <details> nativo: accesible con teclado, funciona sin JS y Ctrl+F encuentra su contenido.
  */
-import ChevronDown from "@/components/icons/ChevronDown.astro"
 import GitHub from "@/components/icons/GitHub.astro"
 import ExternalLink from "@/components/icons/ExternalLink.astro"
 import TextoGlosario from "./TextoGlosario.astro"
@@ -17,36 +16,34 @@ interface Props {
 const { limitaciones, fuentes, repo, herramientas } = Astro.props
 ---
 
-<details class="capa group border-y border-rule-strong" id="como-lo-hice">
-  <summary class="flex cursor-pointer list-none items-center gap-4 py-5">
-    <span class="flex-1">
-      <span class="block font-serif text-2xl text-ink sm:text-[1.75rem]">Para curiosos: cómo lo hice</span>
-      <span class="mt-1 block text-base text-ink-2">Método, código, limitaciones y fuentes · {herramientas.join(", ")}</span>
+<details class="capa" id="como-lo-hice">
+  <summary class="resumen">
+    <span class="min-w-0 flex-1">
+      <span class="titulo">Para curiosos: cómo lo hice</span>
+      <span class="mt-1 block text-base text-tinta-2">Método, código, limitaciones y fuentes. Hecho con {herramientas.join(", ")}.</span>
     </span>
-    <span class="grid size-11 shrink-0 place-items-center rounded-full border border-rule text-ink-2 transition-colors group-hover:border-ink group-hover:text-ink">
-      <ChevronDown class="size-5 transition-transform duration-300 group-open:rotate-180" />
-    </span>
+    <span class="accion" aria-hidden="true"><span class="abrir">Abrir</span><span class="cerrar">Cerrar</span></span>
   </summary>
 
-  <div class="pb-10 pt-2">
+  <div class="contenido">
     <div class="prosa">
       <slot />
     </div>
 
-    <div class="mt-10 grid gap-10 md:grid-cols-2">
-      <section aria-labelledby="limitaciones-t">
-        <h3 id="limitaciones-t" class="font-serif text-xl">Limitaciones</h3>
-        <ul class="mt-3 list-disc space-y-2 pl-5 text-base text-ink-2 marker:text-ink-3">
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      <section aria-labelledby="limitaciones-t" class="campo p-4">
+        <h3 id="limitaciones-t" class="etiqueta mb-2">Limitaciones</h3>
+        <ul class="lista">
           {limitaciones.map((l) => <li><TextoGlosario texto={l} /></li>)}
         </ul>
       </section>
-      <section aria-labelledby="fuentes-t">
-        <h3 id="fuentes-t" class="font-serif text-xl">Fuentes de datos</h3>
-        <ul class="mt-3 space-y-2 text-base">
+      <section aria-labelledby="fuentes-t" class="campo p-4">
+        <h3 id="fuentes-t" class="etiqueta mb-2">Fuentes de datos</h3>
+        <ul class="space-y-2 text-base">
           {
             fuentes.map((f) => (
               <li>
-                <a href={f.url} rel="noopener" class="inline-flex items-baseline gap-1.5 text-accent underline">
+                <a href={f.url} rel="noopener" class="inline-flex items-baseline gap-1.5 text-pluma underline">
                   {f.nombre}
                   <ExternalLink class="size-3.5 self-center" />
                 </a>
@@ -57,24 +54,75 @@ const { limitaciones, fuentes, repo, herramientas } = Astro.props
       </section>
     </div>
 
-    <a
-      href={repo}
-      rel="noopener"
-      class="mt-10 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-base font-bold text-paper no-underline transition-transform hover:-translate-y-0.5"
-    >
+    <a href={repo} rel="noopener" class="boton boton-lleno mt-8">
       <GitHub class="size-5" /> Ver el código en GitHub
     </a>
   </div>
 </details>
 
 <style>
-  summary::-webkit-details-marker {
+  .capa {
+    border: 2px solid var(--tinta);
+  }
+  .resumen {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .resumen::-webkit-details-marker {
     display: none;
+  }
+  .titulo {
+    display: block;
+    font-family: var(--font-titulo);
+    font-stretch: 112%;
+    font-weight: 780;
+    font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.7rem);
+    line-height: 1.15;
+  }
+  .accion {
+    flex-shrink: 0;
+    padding: 0.45rem 0.9rem;
+    border: 2px solid var(--tinta);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .resumen:hover .accion {
+    background: var(--tinta);
+    color: var(--papel);
+  }
+  .cerrar,
+  .capa[open] .abrir {
+    display: none;
+  }
+  .capa[open] .cerrar {
+    display: inline;
+  }
+  .capa[open] .resumen {
+    border-bottom: 1px solid var(--forma);
+  }
+  .contenido {
+    padding: 1.5rem 1.25rem 2rem;
+  }
+  .lista {
+    list-style: square;
+    padding-left: 1.2rem;
+    font-size: 1rem;
+    color: var(--tinta-2);
+  }
+  .lista li + li {
+    margin-top: 0.4rem;
+  }
+  .lista li::marker {
+    color: var(--forma-t);
   }
   .capa::details-content {
     transition:
-      content-visibility 300ms allow-discrete,
-      block-size 300ms var(--ease-salida);
+      content-visibility 280ms allow-discrete,
+      block-size 280ms var(--ease-salida);
     block-size: 0;
     overflow: clip;
   }

@@ -10,6 +10,7 @@ const casos = await obtenerCasos()
 const publicados = casos.filter((c) => c.data.estado === "publicado")
 const semanas = Array.from({ length: ruta.totalSemanas }, (_, i) => i + 1)
 const faseDe = (s: number) => ruta.fases.find((f) => s >= f.semanas[0] && s <= f.semanas[1])
+const fin = ruta.fin ?? new Date(ruta.inicio.getTime() + ruta.totalSemanas * 7 * 86_400_000)
 
 type EstadoSemana = "hecha" | "actual" | "colchon" | "atrasada" | "pendiente"
 const estadoSemana = (s: number): EstadoSemana =>
@@ -19,7 +20,7 @@ const textoEstado: Record<EstadoSemana, string> = {
   hecha: "completada",
   actual: "en curso",
   colchon: "colchón",
-  atrasada: "pendiente de cerrar",
+  atrasada: "por cerrar",
   pendiente: "por venir",
 }
 
@@ -28,85 +29,98 @@ const estadoFase = (f: (typeof ruta.fases)[number]) => {
   const n = propias.filter((s) => r.hechas.has(s)).length
   if (n === propias.length) return { texto: "Completa", clase: "completa" }
   if (r.actual >= f.semanas[0] && r.actual <= f.semanas[1]) return { texto: `En curso, ${n} de ${propias.length}`, clase: "en-curso" }
-  if (n > 0) return { texto: `${n} de ${propias.length}`, clase: "en-curso" }
+  if (n > 0) return { texto: `${n} de ${propias.length} semanas`, clase: "en-curso" }
   return { texto: r.actual > f.semanas[1] ? "Por cerrar" : "Por venir", clase: "pendiente" }
 }
 
-const resumen = !r.empezo
-  ? `Empieza el lunes ${fecha(ruta.inicio)}.`
-  : r.termino
-    ? "Ruta terminada."
-    : `Semana ${r.actual} de ${r.total}.`
+const semanaTexto = !r.empezo ? "Empieza el lunes" : r.termino ? "Terminada" : `Semana ${r.actual} de ${r.total}`
+const digitos = String(Math.min(Math.max(r.actual, 0), r.total)).padStart(2, "0").split("")
 ---
 
 <Layout
   title="Ruta de 26 semanas"
   description="Mi avance público en la ruta de análisis de datos: fases, semanas completadas y casos publicados."
 >
-  <div class="contenedor pt-12 sm:pt-20">
+  <div class="contenedor pt-12 sm:pt-16">
     <header class="max-w-3xl">
-      <h1 class="text-5xl tracking-[-0.025em] sm:text-7xl">Ruta de {ruta.totalSemanas} semanas</h1>
-      <p class="medida mt-4 text-xl text-ink-2">
-        Del {fecha(ruta.inicio)} al {fecha(ruta.fin ?? new Date(ruta.inicio.getTime() + ruta.totalSemanas * 7 * 86_400_000))}. Cada fase termina en un caso publicado.
+      <h1 class="text-5xl sm:text-7xl">Ruta de {ruta.totalSemanas} semanas</h1>
+      <p class="medida mt-4 text-xl text-tinta-2">
+        Del {fecha(ruta.inicio)} al {fecha(fin)}. Cada fase termina en un caso publicado.
       </p>
     </header>
 
-    <section class="mt-14 border-t-2 border-rule-strong pt-6" aria-labelledby="avance-t">
-      <h2 id="avance-t" class="text-2xl">{resumen}</h2>
-      <p class="mt-1 text-base text-ink-2">
-        {r.hechas.size} semanas completadas, {publicados.length} {publicados.length === 1 ? "caso publicado" : "casos publicados"}.
-        {r.atrasadas.length > 0 && ` ${r.atrasadas.length} por cerrar.`}
-      </p>
+    <section class="avance mt-10" aria-labelledby="avance-t">
+      <h2 id="avance-t" class="sr-only">Avance</h2>
+      <div class="campos">
+        <div class="p-4">
+          <span class="etiqueta">Semana actual</span>
+          <p class="mt-2 flex items-center gap-3">
+            {r.empezo && <span class="casillas" aria-hidden="true">{digitos.map((d) => <span>{d}</span>)}</span>}
+            <span class="text-lg font-semibold">{semanaTexto}{!r.empezo && ` ${fecha(ruta.inicio)}`}</span>
+          </p>
+        </div>
+        <div class="p-4">
+          <span class="etiqueta">Semanas completadas</span>
+          <p class="mt-1 text-lg"><span class="num text-3xl font-extrabold text-pluma">{r.hechas.size}</span> de {r.total}</p>
+        </div>
+        <div class="p-4">
+          <span class="etiqueta">Casos publicados</span>
+          <p class="mt-1 text-lg"><span class="num text-3xl font-extrabold text-pluma">{publicados.length}</span> de {ruta.fases.filter((f) => f.caso).length} planeados</p>
+        </div>
+      </div>
 
-      <ol class="semanas mt-6 grid grid-cols-[repeat(13,minmax(0,1fr))] gap-1.5" aria-label="Semanas de la ruta">
-        {
-          semanas.map((s) => {
-            const e = estadoSemana(s)
-            const f = faseDe(s)
-            return (
-              <li class:list={["semana grid aspect-square place-items-center rounded-[3px] text-xs", e]} title={`Semana ${s}${f ? `: ${f.nombre}` : ""}`}>
-                <span class="sr-only">
-                  Semana {s}, {textoEstado[e]}
-                  {f ? `, ${f.nombre}` : ""}
-                </span>
-                <span aria-hidden="true" class="num">{s}</span>
-              </li>
-            )
-          })
-        }
-      </ol>
-      <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-2" aria-label="Leyenda">
-        <li class="inline-flex items-center gap-1.5"><span class="muestra hecha"></span> Completada</li>
-        <li class="inline-flex items-center gap-1.5"><span class="muestra actual"></span> Esta semana</li>
-        <li class="inline-flex items-center gap-1.5"><span class="muestra colchon"></span> Colchón (fin de año, Semana Santa)</li>
-        <li class="inline-flex items-center gap-1.5"><span class="muestra pendiente"></span> Por venir</li>
-      </ul>
+      <div class="border-t border-forma p-4">
+        <span class="etiqueta mb-3">Calendario</span>
+        <ol class="semanas" aria-label="Semanas de la ruta">
+          {
+            semanas.map((s) => {
+              const e = estadoSemana(s)
+              const f = faseDe(s)
+              return (
+                <li class:list={["semana", e]} title={`Semana ${s}${f ? `: ${f.nombre}` : ""}`}>
+                  <span class="sr-only">
+                    Semana {s}, {textoEstado[e]}
+                    {f ? `, ${f.nombre}` : ""}
+                  </span>
+                  <span aria-hidden="true" class="num">{s}</span>
+                </li>
+              )
+            })
+          }
+        </ol>
+        <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-tinta-2" aria-label="Leyenda">
+          <li class="inline-flex items-center gap-1.5"><span class="muestra hecha"></span> Completada</li>
+          <li class="inline-flex items-center gap-1.5"><span class="muestra actual"></span> Esta semana</li>
+          <li class="inline-flex items-center gap-1.5"><span class="muestra colchon"></span> Colchón (fin de año, Semana Santa)</li>
+          <li class="inline-flex items-center gap-1.5"><span class="muestra pendiente"></span> Por venir</li>
+        </ul>
+      </div>
     </section>
 
-    <section class="mt-20" aria-labelledby="fases-t">
-      <h2 id="fases-t" class="border-t-2 border-rule-strong pt-4 text-3xl sm:text-[2.6rem]">Fases</h2>
-      <ol class="mt-6 divide-y divide-rule">
+    <section class="mt-16" aria-labelledby="fases-t">
+      <h2 id="fases-t" class="text-[2rem] sm:text-[2.6rem]">Fases</h2>
+      <ol class="fases mt-6">
         {
           ruta.fases.map((f) => {
             const e = estadoFase(f)
             const delaFase = casos.filter((c) => c.data.fase === f.numero)
             return (
-              <li class="grid gap-x-10 gap-y-2 py-7 md:grid-cols-[13rem_minmax(0,1fr)]">
+              <li class="fase">
                 <div>
-                  <p class="num text-base text-ink-3">
-                    F{f.numero}, {f.semanas[0] === f.semanas[1] ? `semana ${f.semanas[0]}` : `semanas ${f.semanas[0]} a ${f.semanas[1]}`}
+                  <p class="num text-lg font-extrabold text-forma-t">F{f.numero}</p>
+                  <p class="text-base text-tinta-3">
+                    {f.semanas[0] === f.semanas[1] ? `Semana ${f.semanas[0]}` : `Semanas ${f.semanas[0]} a ${f.semanas[1]}`}
                   </p>
-                  <p class:list={["mt-1 text-base font-bold", `estado-${e.clase}`]}>{e.texto}</p>
                 </div>
-                <div>
-                  <h3 class="text-2xl">{f.nombre}</h3>
-                  {f.objetivo && <p class="medida mt-1 text-lg text-ink-2">{f.objetivo}</p>}
+                <div class="min-w-0">
+                  <h3 class="text-[1.4rem]">{f.nombre}</h3>
+                  {f.objetivo && <p class="medida mt-1 text-lg text-tinta-2">{f.objetivo}</p>}
                   {delaFase.length > 0 ? (
                     <ul class="mt-2 space-y-1 text-lg">
                       {delaFase.map((c) => (
                         <li>
-                          Caso:{" "}
-                          <a href={urlCaso(c)} class="text-accent underline">
+                          <span class="text-tinta-3">Caso:</span>{" "}
+                          <a href={urlCaso(c)} class="text-pluma underline">
                             {c.data.pregunta}
                           </a>
                         </li>
@@ -114,20 +128,21 @@ const resumen = !r.empezo
                     </ul>
                   ) : (
                     f.caso && (
-                      <p class="mt-2 text-lg text-ink-2">
-                        Caso:{" "}
+                      <p class="mt-2 text-lg text-tinta-2">
+                        <span class="text-tinta-3">Caso:</span>{" "}
                         {f.caso.url ? (
-                          <a href={f.caso.url} class="text-accent underline">
+                          <a href={f.caso.url} class="text-pluma underline">
                             {f.caso.titulo}
                           </a>
                         ) : (
                           f.caso.titulo
                         )}
-                        {f.caso.fuente && <span class="text-ink-3"> ({f.caso.fuente})</span>}
+                        {f.caso.fuente && <span class="text-tinta-3"> ({f.caso.fuente})</span>}
                       </p>
                     )
                   )}
                 </div>
+                <p class:list={["estado", `estado-${e.clase}`]}>{e.texto}</p>
               </li>
             )
           })
@@ -138,47 +153,113 @@ const resumen = !r.empezo
 </Layout>
 
 <style>
-  .semana,
-  .muestra {
-    border: 1px solid var(--rule);
-    color: var(--ink-3);
+  .avance,
+  .fases {
+    border: 2px solid var(--forma);
+  }
+  .campos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .campos > div + div {
+    border-top: 1px solid var(--forma);
+  }
+  @media (min-width: 48rem) {
+    .campos {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+    .campos > div + div {
+      border-top: 0;
+      border-left: 1px solid var(--forma);
+    }
+  }
+  .semanas {
+    display: grid;
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+    border: 1.5px solid var(--forma-fuerte);
+  }
+  .semana {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-right: 1px solid var(--forma);
+    font-size: 0.85rem;
+    color: var(--tinta-3);
+  }
+  .semana:nth-child(13n) {
+    border-right: 0;
+  }
+  .semana:nth-child(n + 14) {
+    border-top: 1px solid var(--forma);
   }
   .muestra {
     display: inline-block;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 2px;
+    width: 0.95rem;
+    height: 0.95rem;
+    border: 1.5px solid var(--forma-fuerte);
   }
   .hecha {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--accent-ink);
-  }
-  .actual {
-    border: 2px solid var(--accent);
-    color: var(--accent);
+    background: var(--pluma);
+    color: var(--pluma-ink);
     font-weight: 700;
   }
+  .muestra.hecha {
+    border-color: var(--pluma);
+  }
+  .actual {
+    box-shadow: inset 0 0 0 3px var(--pluma);
+    color: var(--pluma);
+    font-weight: 800;
+  }
   .colchon {
-    border-style: dashed;
-    background: repeating-linear-gradient(135deg, transparent 0 4px, var(--rule) 4px 5px);
+    background: repeating-linear-gradient(135deg, var(--forma-f) 0 5px, var(--papel) 5px 9px);
+    color: var(--forma-t);
   }
   .atrasada {
-    border-color: var(--nivel-media);
     color: var(--nivel-media);
+    font-weight: 700;
   }
   @media (max-width: 30rem) {
     .semanas {
       grid-template-columns: repeat(7, minmax(0, 1fr));
     }
+    .semana:nth-child(13n) {
+      border-right: 1px solid var(--forma);
+    }
+    .semana:nth-child(7n) {
+      border-right: 0;
+    }
+    .semana:nth-child(n + 8) {
+      border-top: 1px solid var(--forma);
+    }
+  }
+  .fase {
+    display: grid;
+    gap: 0.4rem 1.5rem;
+    padding: 1rem 1.1rem 1.15rem;
+  }
+  .fase + .fase {
+    border-top: 1px solid var(--forma);
+  }
+  @media (min-width: 48rem) {
+    .fase {
+      grid-template-columns: 8rem minmax(0, 1fr) 10rem;
+    }
+    .estado {
+      text-align: right;
+    }
+  }
+  .estado {
+    font-size: 1rem;
+    font-weight: 700;
   }
   .estado-completa {
-    color: var(--accent);
+    color: var(--pluma);
   }
   .estado-en-curso {
     color: var(--nivel-media);
   }
   .estado-pendiente {
-    color: var(--ink-3);
+    color: var(--tinta-3);
   }
 </style>

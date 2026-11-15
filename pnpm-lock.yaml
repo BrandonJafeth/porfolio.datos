@@ -26,10 +26,13 @@ importers:
       '@astrojs/sitemap':
         specifier: 3.7.5
         version: 3.7.5
-      '@fontsource-variable/atkinson-hyperlegible-next':
+      '@fontsource-variable/archivo':
         specifier: 5.3.0
         version: 5.3.0
-      '@fontsource-variable/newsreader':
+      '@fontsource-variable/public-sans':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource/noto-sans':
         specifier: 5.3.0
         version: 5.3.0
       '@observablehq/plot':
@@ -51,10 +54,10 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
     devDependencies:
-      '@fontsource/atkinson-hyperlegible-next':
+      '@fontsource/archivo':
         specifier: 5.3.0
         version: 5.3.0
-      '@fontsource/newsreader':
+      '@fontsource/public-sans':
         specifier: 5.3.0
         version: 5.3.0
       '@resvg/resvg-js':
@@ -642,17 +645,20 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource-variable/atkinson-hyperlegible-next@5.3.0':
-    resolution: {integrity: sha512-UnLzNUy1RWoLDfydAatP4NaRm99X/WbQEph7q/PymJnCFIOOwKOx3pBmp5ys8trO0dM+CKGuJgeZP9fAR4mQpA==}
+  '@fontsource-variable/archivo@5.3.0':
+    resolution: {integrity: sha512-HogK8FJelrD1o7TlZlkIVtHgc20bO5PZRWE7mUeUTdMN055alznQV6/00J00IBeu8FQAH4s3zW9UJNvKExXf+g==}
 
-  '@fontsource-variable/newsreader@5.3.0':
-    resolution: {integrity: sha512-rrzYi43qMpbzwuFtf9OkWH8sxAPVPcQQQEwXpPtwaKYeJ8yVg5aLs5kawmo1f2Q1t1M38TLmEKCkGVDsYwgdFw==}
+  '@fontsource-variable/public-sans@5.3.0':
+    resolution: {integrity: sha512-AVfkmAt50BMXWpOO21FAntiJFKGX6xTc2dSL8dxtDteONe9IuRXJWGbs0EbG955vAMCq23ENeuopuW87cGWDSQ==}
 
-  '@fontsource/atkinson-hyperlegible-next@5.3.0':
-    resolution: {integrity: sha512-8p1tHVoPDo6oYwSO3sMw5snGwFwSf3TmeSF9Gcj792GXdsg6oqvhoItbj6Hj/XZIk0Xs+Cwu6pkLBAl3Q5HrwA==}
+  '@fontsource/archivo@5.3.0':
+    resolution: {integrity: sha512-5DIMgPVJRi62OqdOVoogCFxP73EkNM/E0YVTSDIQlDEJfDbxqZduwM/YoNZwC9Sx1CDgpKinqf8ckRY1QNIecw==}
 
-  '@fontsource/newsreader@5.3.0':
-    resolution: {integrity: sha512-AFR6ZKY89GNL+9qBI2P2+66NhD5bhOj/v6fsLnFYLM4E0JnMB1yKb+Ro8cA64i1hwAWoBfTq5CHJGWH1toLDkw==}
+  '@fontsource/noto-sans@5.3.0':
+    resolution: {integrity: sha512-fBCog2PY7DiVVTEEqtI/Qdinx/knobHYfoGpjFXdfBX5RoJaBp1Prw2G75p0OIsdlMZg3cLo0c+YbIUYOxnQJw==}
+
+  '@fontsource/public-sans@5.3.0':
+    resolution: {integrity: sha512-kjODI0S3zdv0mBYCIQ8TbBayaiqszpc2UbhJiO3bjIqVVXzcWfHSt2o3WBCLOY3juaGaQoy4MoWCcgmfI5hCuA==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -3719,13 +3725,15 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@fontsource-variable/atkinson-hyperlegible-next@5.3.0': {}
+  '@fontsource-variable/archivo@5.3.0': {}
 
-  '@fontsource-variable/newsreader@5.3.0': {}
+  '@fontsource-variable/public-sans@5.3.0': {}
 
-  '@fontsource/atkinson-hyperlegible-next@5.3.0': {}
+  '@fontsource/archivo@5.3.0': {}
 
-  '@fontsource/newsreader@5.3.0': {}
+  '@fontsource/noto-sans@5.3.0': {}
+
+  '@fontsource/public-sans@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 

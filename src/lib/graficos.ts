@@ -13,15 +13,15 @@ const C = {
   acento: "var(--chart-accent)",
   gris: "var(--chart-muted)",
   rejilla: "var(--chart-grid)",
-  tinta: "var(--ink)",
-  tinta2: "var(--ink-2)",
-  papel: "var(--paper)",
+  tinta: "var(--tinta)",
+  tinta2: "var(--tinta-2)",
+  papel: "var(--papel)",
 }
 
 const ESTILO = {
   fontFamily: "inherit",
   fontSize: "13px",
-  color: "var(--ink-2)",
+  color: "var(--tinta-2)",
   background: "transparent",
   overflow: "visible",
 }

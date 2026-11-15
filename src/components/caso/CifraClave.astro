@@ -1,28 +1,43 @@
 ---
+/** Cifra clave como campo del formulario: etiqueta, valor en azul pluma y "¿qué significa?". */
 import TextoGlosario from "./TextoGlosario.astro"
 
 interface Props {
   valor: string
   etiqueta: string
   significado: string
-  destacada?: boolean
 }
 
-const { valor, etiqueta, significado, destacada = false } = Astro.props
+const { valor, etiqueta, significado } = Astro.props
 ---
 
-<div class:list={["cifra flex flex-col gap-2 border-t pt-4", destacada ? "border-accent" : "border-rule-strong"]}>
-  <dt class="order-2 text-base font-bold leading-snug text-ink">{etiqueta}</dt>
-  <dd class:list={["num order-1 font-serif text-5xl leading-none tracking-tight sm:text-[3.25rem]", destacada ? "text-accent" : "text-ink"]}>
-    {valor}
-  </dd>
-  <dd class="order-3 text-base leading-relaxed text-ink-2">
+<div class="cifra">
+  <dt class="etiqueta">{etiqueta}</dt>
+  <dd class="valor num">{valor}</dd>
+  <dd class="significado">
     <span class="sr-only">¿Qué significa? </span><TextoGlosario texto={significado} />
   </dd>
 </div>
 
 <style>
   .cifra {
-    border-top-width: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.1rem 1.15rem;
+    min-width: 0;
+  }
+  .valor {
+    font-weight: 800;
+    font-stretch: 112%;
+    font-size: clamp(2.4rem, 1.9rem + 1.6vw, 3.2rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--pluma);
+  }
+  .significado {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--tinta-2);
   }
 </style>
