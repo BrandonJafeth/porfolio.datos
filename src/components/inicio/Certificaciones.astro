@@ -35,17 +35,14 @@ import { t } from "@/i18n"
 
 <style>
   .certs {
-    border: 2px solid var(--forma);
+    border-top: 1px solid var(--forma);
   }
   .cert {
     display: grid;
     grid-template-columns: 2rem minmax(0, 1fr);
     gap: 0.5rem 0.9rem;
-    padding: 0.9rem 1rem;
+    padding-block: 0.9rem;
     border-bottom: 1px solid var(--forma);
-  }
-  .cert:last-child {
-    border-bottom: 0;
   }
   .cert :global(.logo) {
     width: 1.75rem;

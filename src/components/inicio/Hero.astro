@@ -1,256 +1,128 @@
 ---
 /**
- * Hero (sin foto), organizado como una boleta con dos columnas:
- * - Izquierda, protagonista: la promesa "escrita" en azul pluma + herramientas y temas.
- * - Derecha, la ficha: nombre, ocupación (H1 para SEO), lugar y contacto.
- * - Abajo: pruebas (certificaciones verificables, ruta en curso) y acceso a los casos.
- * En móvil la ficha va primero: quien llega sabe en 5 segundos quién es y cómo contactarlo.
+ * Hero minimalista. Sin cajas: una sola línea de lectura.
+ * 1. Nombre (pequeño) → 2. Rol (H1, SEO) → 3. Promesa escrita en azul pluma sobre renglones de formulario
+ * → 4. Herramientas → 5. Acciones → 6. Ruta en una línea.
+ * Los "renglones" son la única huella del mundo Boleta aquí: la respuesta escrita sobre líneas impresas.
  */
-import { PERFIL, CERTIFICACIONES, esPendiente } from "@/data/perfil"
+import { PERFIL, esPendiente } from "@/data/perfil"
 import LinkedIn from "@/components/icons/LinkedIn.astro"
-import GitHub from "@/components/icons/GitHub.astro"
-import FileText from "@/components/icons/FileText.astro"
 import Mail from "@/components/icons/Mail.astro"
 import IndicadorRuta from "./IndicadorRuta.astro"
 import { t } from "@/i18n"
 
 const { linkedin, github, cv, email } = PERFIL.enlaces
-const contacto = [
-  { texto: "LinkedIn", url: linkedin, Icono: LinkedIn, lleno: true },
-  { texto: "Escribime", url: esPendiente(email) ? email : `mailto:${email}`, Icono: Mail, lleno: false },
-  { texto: "CV", url: cv, Icono: FileText, lleno: false },
-  { texto: "GitHub", url: github, Icono: GitHub, lleno: false },
-]
-const dev = import.meta.env.DEV
-const verificables = CERTIFICACIONES.filter((c) => c.verificar).length
+const enlacesTexto = [
+  { texto: "GitHub", url: github },
+  { texto: "CV", url: cv },
+  { texto: "Ver casos", url: "/casos/" },
+].filter((e) => !esPendiente(e.url))
 ---
 
-<section class="contenedor pt-8 sm:pt-12" aria-labelledby="hero-t">
-  <div class="boleta">
-    <div class="campo-f c-ficha">
-      <span class="etiqueta">Nombre</span>
-      <p class="nombre">{PERFIL.nombre}</p>
-      <span class="etiqueta mt-4">Ocupación</span>
-      <h1 id="hero-t" class="rol">{t("hero.h1")}</h1>
-      <span class="etiqueta mt-4">Lugar</span>
-      <p class="lugar">{PERFIL.ciudad}, {PERFIL.provincia}</p>
-    </div>
+<section class="hero contenedor" aria-labelledby="hero-t">
+  <p class="nombre">{PERFIL.nombre}</p>
+  <h1 id="hero-t" class="rol">{t("hero.h1")}</h1>
 
-    <div class="campo-f c-promesa">
-      <span class="etiqueta">¿Qué hace?</span>
-      <p class="promesa escribir">{t("hero.promesa")}</p>
-      <p class="apoyo">{t("hero.apoyo")}</p>
-    </div>
+  <p class="promesa escribir">{t("hero.promesa")}</p>
 
-    <div class="campo-f c-contacto">
-      <span class="etiqueta">Contacto</span>
-      <ul class="acciones">
-        {
-          contacto.map(({ texto, url, Icono, lleno }) =>
-            !esPendiente(url) ? (
-              <li>
-                <a href={url} rel="noopener" class:list={["boton", lleno && "boton-lleno"]}>
-                  <Icono class="size-5" /> {texto}
-                </a>
-              </li>
-            ) : dev ? (
-              <li>
-                <span class="boton pendiente" title={`Falta ${url} en src/data/perfil.ts`}>
-                  <Icono class="size-5" /> {texto}: {url}
-                </span>
-              </li>
-            ) : null,
-          )
-        }
-      </ul>
-    </div>
+  <p class="apoyo">{t("hero.apoyo")}</p>
 
-    <div class="campo-f c-certs">
-      <span class="etiqueta">Certificaciones</span>
-      <p class="text-base sm:text-lg">
-        <span class="num text-2xl font-extrabold text-pluma">{verificables}</span> verificables en línea, entre ellas Data Analytics Essentials de Cisco.
-      </p>
-      <a href="#formacion" class="mt-1 inline-block font-bold text-pluma underline decoration-2 underline-offset-4">Ver certificaciones</a>
-    </div>
+  <div class="acciones">
+    {
+      !esPendiente(linkedin) && (
+        <a href={linkedin} rel="noopener" class="boton boton-lleno">
+          <LinkedIn class="size-5" /> LinkedIn
+        </a>
+      )
+    }
+    {
+      !esPendiente(email) && (
+        <a href={`mailto:${email}`} class="boton">
+          <Mail class="size-5" /> Escribime
+        </a>
+      )
+    }
+    <ul class="enlaces">
+      {
+        enlacesTexto.map((e) => (
+          <li>
+            <a href={e.url} rel={e.url.startsWith("http") ? "noopener" : undefined}>
+              {e.texto}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 
-    <div class="campo-f c-ruta">
-      <span class="etiqueta">Ruta de datos</span>
-      <IndicadorRuta />
-    </div>
-
-    <a href="/casos/" class="c-casos">
-      <span class="etiqueta">Casos</span>
-      <span class="ir">{t("hero.verCasos")}</span>
-      <span class="text-base text-tinta-2">Preguntas reales respondidas con datos.</span>
-    </a>
+  <div class="ruta">
+    <IndicadorRuta />
   </div>
 </section>
 
 <style>
-  /* Las líneas internas son el "gap" de 1px sobre la tinta de formulario. */
-  .boleta {
-    display: grid;
-    gap: 1px;
-    background: var(--forma);
-    border: 2px solid var(--forma);
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "ficha"
-      "contacto"
-      "promesa"
-      "certs"
-      "ruta"
-      "casos";
+  .hero {
+    padding-top: clamp(2.5rem, 1.5rem + 5vw, 6.5rem);
   }
-  .campo-f,
-  .c-casos {
-    background: var(--papel);
-    padding: 0.9rem 1rem 1rem;
-    min-width: 0;
-  }
-  .campo-f .etiqueta,
-  .c-casos .etiqueta {
-    margin-bottom: 0.3rem;
-  }
-  .c-ficha {
-    grid-area: ficha;
-    background: var(--forma-f);
-  }
-  .c-promesa {
-    grid-area: promesa;
-  }
-  .c-contacto {
-    grid-area: contacto;
-    background: var(--forma-f);
-  }
-  .c-certs {
-    grid-area: certs;
-  }
-  .c-ruta {
-    grid-area: ruta;
-  }
-  .c-casos {
-    grid-area: casos;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    text-decoration: none;
-    transition: background 160ms var(--ease-salida);
-  }
-  .c-casos:hover {
-    background: var(--pluma-f);
-  }
-  .ir {
-    font-family: var(--font-titulo);
-    font-stretch: 112%;
-    font-weight: 780;
-    font-size: 1.4rem;
-    line-height: 1.1;
-    color: var(--pluma);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.2em;
-  }
-
   .nombre {
-    font-family: var(--font-titulo);
-    font-stretch: 118%;
-    font-weight: 820;
-    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
+    font-size: 1.05rem;
+    font-weight: 650;
+    color: var(--tinta-2);
   }
   .rol {
-    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem);
-    font-stretch: 105%;
-    font-weight: 720;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    margin-top: 0.3rem;
+    font-size: clamp(1.35rem, 1.1rem + 1.1vw, 2rem);
+    font-stretch: 112%;
+    font-weight: 780;
+    line-height: 1.15;
   }
-  .lugar {
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
+  /* La respuesta escrita en pluma sobre renglones impresos en tinta de formulario. */
   .promesa {
+    --renglon: 1.1em;
+    margin-top: clamp(1.25rem, 0.8rem + 1.6vw, 2rem);
+    max-width: 14ch;
     font-family: var(--font-titulo);
     font-stretch: 100%;
     font-weight: 760;
-    font-size: clamp(2.3rem, 1.2rem + 4.6vw, 4.6rem);
-    line-height: 1;
+    font-size: clamp(2.5rem, 1.3rem + 5.2vw, 5.4rem);
+    line-height: var(--renglon);
     letter-spacing: -0.032em;
     color: var(--pluma);
-    max-width: 14ch;
     text-wrap: balance;
-    padding-block: 0.35rem 0;
+    background-image: linear-gradient(transparent calc(100% - 2px), var(--forma) calc(100% - 2px));
+    background-size: 100% var(--renglon);
+    background-position: 0 0;
+    background-repeat: repeat-y;
   }
   .apoyo {
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
     max-width: 52ch;
-    font-size: 1.1rem;
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
     color: var(--tinta-2);
   }
   .acciones {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: 1.75rem;
   }
-  .acciones .boton {
-    background: var(--papel);
+  .enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
   }
-  .acciones .boton-lleno,
-  .acciones .boton:hover {
-    background: var(--tinta);
+  .enlaces a {
+    font-weight: 700;
+    color: var(--pluma);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
   }
-  .acciones .boton-lleno:hover {
-    background: var(--pluma);
-  }
-  .pendiente {
-    border-style: dashed;
-    color: var(--nivel-media);
-    border-color: var(--nivel-media);
-    font-size: 0.85rem;
-    font-family: var(--font-mono);
-  }
-
-  @media (min-width: 48rem) {
-    .boleta {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas:
-        "promesa promesa"
-        "ficha contacto"
-        "certs ruta"
-        "casos casos";
-    }
-    .c-promesa {
-      padding: 1.4rem 1.4rem 1.6rem;
-    }
-  }
-  @media (min-width: 64rem) {
-    .boleta {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) 21rem;
-      grid-template-areas:
-        "promesa promesa promesa ficha"
-        "promesa promesa promesa contacto"
-        "certs ruta casos casos";
-    }
-    .c-promesa {
-      padding: 1.6rem 1.75rem 1.75rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .c-ficha,
-    .c-contacto {
-      padding: 1.1rem 1.25rem 1.2rem;
-    }
-    .acciones {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .acciones .boton {
-      width: 100%;
-      justify-content: flex-start;
-    }
+  .ruta {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--forma);
+    max-width: 40rem;
   }
 </style>

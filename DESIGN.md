@@ -8,7 +8,7 @@ la respuesta es lo único "escrito a mano".
 ## Reglas del mundo
 1. **Un solo color de respuesta.** `--pluma` marca respuestas, cifras y la opción elegida. Nada más compite con él.
 2. **La estructura es tinta de formulario.** Campos, líneas y etiquetas usan `--forma*`; nada de grises de relleno ni sombras decorativas.
-3. **La cuadrícula es la única geometría.** Todo vive en campos con borde; esquinas rectas (sin redondeos ni píldoras).
+3. **Cajas solo donde hay un dato que llenar** (respuesta, cifras, gráfico, filtros). Las listas usan reglas horizontales; esquinas rectas, sin píldoras.
 4. **Las etiquetas nombran campos**, en minúscula normal (`.etiqueta`): nunca versalitas ni "eyebrows" decorativos.
 5. **Números protagonistas** en Archivo tabular (cero sin cruzar). Dígitos sueltos van en `.casillas`.
 
@@ -35,7 +35,8 @@ Categórica para futuras series: pluma, `--chart-2` naranja, `--chart-3` grafito
 - **₡:** ni Archivo ni Public Sans lo traen; "Colon CR" (Noto Sans, `unicode-range: U+20A1`) lo dibuja igual en todos los sistemas.
 
 ## Componentes clave
-- **Hero (sin foto):** la promesa en pluma es la protagonista; a la derecha la ficha (Nombre, Ocupación = H1, Lugar) y Contacto; abajo Certificaciones, Ruta (casillas) y acceso a Casos.
+- **Hero (minimalista, sin foto ni cajas):** nombre pequeño, rol (H1), la promesa en pluma escrita sobre **renglones** de tinta de formulario, herramientas, LinkedIn + Escribime + enlaces de texto, y la ruta en una línea.
+- **Logo:** solo "Brandon Carrillo" en Archivo, con una casilla marcada en pluma (la misma del favicon).
 - **Caso:** P{n} + pregunta; campo Respuesta con relleno; cifras como campos; gráfico dentro de un campo con la fuente "cosida" en el pie; confianza como pregunta de opción única.
 - **Interruptor de lectura y filtros:** opciones con casillas cuadradas; la elegida se marca en pluma.
 

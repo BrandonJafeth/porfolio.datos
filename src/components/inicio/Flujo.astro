@@ -1,5 +1,5 @@
 ---
-/** Cómo trabajo: 6 pasos en orden, como una fila de campos numerados del formulario. */
+/** Cómo trabajo: 6 pasos en orden. Sin celdas: número en casilla + nombre + detalle. */
 import { FLUJO } from "@/data/perfil"
 ---
 
@@ -10,9 +10,11 @@ import { FLUJO } from "@/data/perfil"
         <span class="casillas" aria-hidden="true">
           <span>{i + 1}</span>
         </span>
-        <span class="sr-only">Paso {i + 1}: </span>
-        <span class="nombre">{f.paso}</span>
-        <span class="detalle">{f.detalle}</span>
+        <span class="texto">
+          <span class="sr-only">Paso {i + 1}: </span>
+          <span class="nombre">{f.paso}</span>
+          <span class="detalle">{f.detalle}</span>
+        </span>
       </li>
     ))
   }
@@ -21,53 +23,52 @@ import { FLUJO } from "@/data/perfil"
 <style>
   .flujo {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border: 2px solid var(--forma);
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--forma);
   }
   .paso {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    column-gap: 0.75rem;
+    gap: 0.9rem;
     align-items: start;
-    padding: 0.9rem 1rem 1rem;
-    border-right: 1px solid var(--forma);
+    padding-block: 0.85rem;
     border-bottom: 1px solid var(--forma);
   }
-  .paso:nth-child(2n) {
-    border-right: 0;
-  }
-  .paso:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-  .casillas {
-    grid-row: span 2;
+  .texto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
   .nombre {
     font-family: var(--font-titulo);
-    font-stretch: 112%;
+    font-stretch: 108%;
     font-weight: 750;
-    font-size: 1.1rem;
-    line-height: 1.2;
+    font-size: 1.12rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
   }
   .detalle {
     font-size: 1rem;
     color: var(--tinta-2);
   }
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
+    .flujo {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 2rem;
+    }
+  }
+  @media (min-width: 72rem) {
     .flujo {
       grid-template-columns: repeat(6, minmax(0, 1fr));
+      column-gap: 1.5rem;
     }
     .paso {
       grid-template-columns: minmax(0, 1fr);
-      row-gap: 0.5rem;
+      gap: 0.6rem;
       border-bottom: 0;
-      border-right: 1px solid var(--forma) !important;
-    }
-    .paso:last-child {
-      border-right: 0 !important;
+      padding-block: 1rem 0;
     }
     .casillas {
-      grid-row: auto;
       justify-self: start;
     }
   }
